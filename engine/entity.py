@@ -11,14 +11,22 @@ class Entity(pymunk.Body):
     _space = None
     _active = True
 
-    def __init__(self, position=(0, 0), body_type=pymunk.Body.DYNAMIC, colliders: list = None):
-        super().__init__(mass=1, moment=float("inf"), body_type=body_type)
+    def __init__(
+        self,
+        position=(0, 0),
+        body_type=pymunk.Body.DYNAMIC,
+        mass: float = 1, moment: float = float("inf"),
+        colliders: list = None, collider: dict = None
+    ):
+        super().__init__(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.colliders = []
 
         if colliders is not None:
-            for collider in colliders:
-                self.add_collider(collider)
+            for col in colliders:
+                self.add_collider(col)
+        elif collider is not None:
+            self.add_collider(col)
 
     @property
     def active(self):
