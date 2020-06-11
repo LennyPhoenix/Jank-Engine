@@ -21,9 +21,9 @@ class Application:
 
     def __init__(
         self,
-        caption: str,
-        default_size: tuple,
-        minimum_size: tuple,
+        caption: str = None,
+        default_size: tuple = (1000, 800),
+        minimum_size: tuple = (100, 100),
         world_layers: list = [],
         ui_layers: list = [],
         resizable: bool = True,
