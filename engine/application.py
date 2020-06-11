@@ -10,8 +10,8 @@ pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 
 
 class Application:
-    _header_size = 64
     _debug_mode = False
+    _debug_draw_options = pymunk.pyglet_util.DrawOptions()
 
     def __init__(
         self,
@@ -62,8 +62,7 @@ class Application:
         with self.world_camera:
             self.world_batch.draw()
             if self._debug_mode:
-                debug_draw_options = pymunk.pyglet_util.DrawOptions()
-                self.physics_space.debug_draw(debug_draw_options)
+                self.physics_space.debug_draw(self._debug_draw_options)
         self.ui_batch.draw()
 
     def on_key_press(self, button, modifiers):
