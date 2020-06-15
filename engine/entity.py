@@ -74,8 +74,25 @@ class Entity(pymunk.Body):
             group=group
         )
 
+    @property
+    def flip(self):
+        return self._flip
+
+    @flip.setter
+    def flip(self, flip):
+        if self._flip != flip:
+            if flip:
+                self.sprite.scale_x = -(abs(self.sprite.scale_x))
+            else:
+                self.sprite.scale_x = abs(self.sprite.scale_x)
+            self._flip = flip
+            self.update_sprite()
+
     def update_sprite(self):
-        self.sprite.position = tuple(self.position+self.sprite_offset)
+        pos = self.position+self.sprite_offset
+        if self.flip:
+            pos.x += self.sprite.width
+        self.sprite.position = tuple(pos)
 
     def delete(self):
         self.sprite.delete()
