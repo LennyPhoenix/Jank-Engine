@@ -14,13 +14,14 @@ class Entity(pymunk.Body):
 
     def __init__(
         self,
-        position=(0, 0),
+        position=(0, 0), rotation=0,
         body_type=pymunk.Body.DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
         colliders: list = None, collider: dict = None
     ):
         super().__init__(mass=mass, moment=moment, body_type=body_type)
         self.position = position
+        self.angle = math.radians(rotation)
         self.colliders = []
 
         if colliders is not None:
@@ -68,13 +69,14 @@ class Entity(pymunk.Body):
 
     def create_sprite(self, image, offset, batch=None, group=None):
         self.sprite_offset = pymunk.Vec2d(offset)
+        pos = self.sprite_offset.rotated(self.angle)+self.position
         self.sprite = pyglet.sprite.Sprite(
             image,
-            x=self.position.x+self.sprite_offset.x,
-            y=self.position.y+self.sprite_offset.y,
+            x=pos.x, y=pos.y,
             batch=batch,
             group=group
         )
+        self.sprite.rotation = math.degrees(self.angle)
 
     @property
     def flip(self):
@@ -91,10 +93,12 @@ class Entity(pymunk.Body):
             self.update_sprite()
 
     def update_sprite(self):
-        pos = self.position+self.sprite_offset
+        pos = self.sprite_offset
         if self.flip:
             pos.x += self.sprite.width
+        pos = self.position+pos.rotated(self.angle)
         self.sprite.position = tuple(pos)
+        self.sprite.rotation = math.degrees(self.angle)
 
     def delete(self):
         self.space = None
