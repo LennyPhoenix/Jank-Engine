@@ -49,6 +49,7 @@ class Application:
             min_zoom=0,
             max_zoom=float("inf")
         )
+        self.position_camera()
 
         self.ui_batch = pyglet.graphics.Batch()
         if fps_counter:
@@ -71,13 +72,16 @@ class Application:
 
     def update(self, dt):
         self.physics_space.step(dt)
-        self.position_camera()
 
-    def position_camera(self, position: tuple = (0, 0)):
+    def position_camera(
+        self,
+        position: tuple = (0, 0), zoom: float = 1,
+        min_pos: tuple = (None, None), max_pos: tuple = (None, None)
+    ):
         zoom = min(
             self.window.width/self.default_size[0],
             self.window.height/self.default_size[1]
-        )
+        ) * zoom
 
         if self.world_camera.zoom != zoom:
             self.world_camera.zoom = zoom
@@ -85,10 +89,20 @@ class Application:
         x = -self.window.width//2/zoom
         y = -self.window.height//2/zoom
 
-        x += position[0]
-        y += position[1]
+        target_x = position[0]
+        target_y = position[1]
 
-        x, y = round(x), round(y)
+        if min_pos[0] is not None:
+            target_x = max(target_x, min_pos[0])
+        if min_pos[1] is not None:
+            target_y = max(target_y, min_pos[1])
+        if max_pos[0] is not None:
+            target_x = min(target_x, max_pos[0])
+        if max_pos[1] is not None:
+            target_y = min(target_y, max_pos[1])
+
+        x += target_x
+        y += target_y
 
         if self.world_camera.position != (x, y):
             self.world_camera.position = (x, y)
@@ -111,7 +125,7 @@ class Application:
             )
 
     def run(self):
-        pyglet.clock.schedule(self.update)
+        pyglet.clock.schedule_interval(self.update, 1/120)
         pyglet.app.run()
 
 
