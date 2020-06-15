@@ -35,17 +35,11 @@ class Server(Application):
 
         try:
             while True:
-                header_bytes = b""
-                while len(header_bytes) < self._header_size:
-                    header_bytes += c_socket.recv(
-                        self._header_size - len(header_bytes)
-                    )
+                header_bytes = self.recvall(c_socket, self._header_size)
                 header = header_bytes.decode("utf-8")
                 length = int(header.strip())
 
-                message = b""
-                while len(message) < length:
-                    message += c_socket.recv(length - len(message))
+                message = self.recvall(c_socket, length)
 
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
@@ -65,13 +59,21 @@ class Server(Application):
         for c_socket in self.clients.values():
             self.send(c_socket, protocol, data)
 
-    def send(self, socket, protocol: str, data: dict):
+    def send(self, socket: socket.socket, protocol: str, data: dict):
         message = pickle.dumps({
             "protocol": protocol,
             "data": data
         })
         header = bytes(f"{len(message):<{self._header_size}}", "utf-8")
         return self._socket.sendall(header + message)
+
+    def recvall(self, socket: socket.socket, buffer: int):
+        message = b""
+        while len(message) < buffer:
+            message += socket.recv(
+                buffer - len(message)
+            )
+        return message
 
     def _socket_thread(self):
         self._socket.listen()

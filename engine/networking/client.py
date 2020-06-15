@@ -29,17 +29,11 @@ class Client(Application):
     def _socket_thread(self):
         try:
             while True:
-                header_bytes = b""
-                while len(header_bytes) < self._header_size:
-                    header_bytes += self._socket.recv(
-                        self._header_size - len(header_bytes)
-                    )
+                header_bytes = self.recvall(self._header_size)
                 header = header_bytes.decode("utf-8")
                 length = int(header.strip())
 
-                message = b""
-                while len(message) < length:
-                    message += self._socket.recv(length - len(message))
+                message = self.recvall(length)
 
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
@@ -58,6 +52,14 @@ class Client(Application):
         })
         header = bytes(f"{len(message):<{self._header_size}}", "utf-8")
         return self._socket.sendall(header + message)
+
+    def recvall(self, buffer: int):
+        message = b""
+        while len(message) < buffer:
+            message += self._socket.recv(
+                buffer - len(message)
+            )
+        return message
 
     def run(self):
         # TODO: Make this Non-Blocking.
