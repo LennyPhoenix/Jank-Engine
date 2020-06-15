@@ -43,8 +43,8 @@ def rect(data):
         vertices=[
             (data["x"], data["y"]),
             (data["x"]+data["width"], data["y"]),
-            (data["x"]+data["width"], data["y"]+data["width"]),
-            (data["x"], data["y"]+data["width"])
+            (data["x"]+data["width"], data["y"]+data["height"]),
+            (data["x"], data["y"]+data["height"])
         ],
         transform=transform,
         radius=data["radius"]
