@@ -44,6 +44,10 @@ class Client(Application):
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
                     self._protocols[data["protocol"]](**data["data"])
+                else:
+                    print(
+                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
+                    )
         except (ConnectionAbortedError, ConnectionResetError) as e:
             print("Disconnected.")
 

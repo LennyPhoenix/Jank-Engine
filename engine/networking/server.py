@@ -52,7 +52,7 @@ class Server(Application):
                     self._protocols[data["protocol"]](**data["data"])
                 else:
                     print(
-                        f"Recieved invalid protocol type: {data['protocol']}"
+                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                     )
         except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
             print(
