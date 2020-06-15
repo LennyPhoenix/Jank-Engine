@@ -10,6 +10,7 @@ from .collider_dicts import dict_to_collider
 class Entity(pymunk.Body):
     _space = None
     _active = True
+    _flip = False
 
     def __init__(
         self,
@@ -26,7 +27,7 @@ class Entity(pymunk.Body):
             for col in colliders:
                 self.add_collider(col)
         elif collider is not None:
-            self.add_collider(col)
+            self.add_collider(collider)
 
     @property
     def active(self):
@@ -53,7 +54,8 @@ class Entity(pymunk.Body):
             self.space.remove(self, *self.colliders)
 
         self._space = space
-        self.space.add(self, *self.colliders)
+        if space is not None:
+            self.space.add(self, *self.colliders)
 
     def add_collider(self, collider):
         col = dict_to_collider(collider)
