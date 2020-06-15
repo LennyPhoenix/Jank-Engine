@@ -95,6 +95,7 @@ class Entity(pymunk.Body):
         self.sprite.position = tuple(pos)
 
     def delete(self):
+        self.space = None
         self.sprite.delete()
 
     def __getstate__(self):
