@@ -113,6 +113,33 @@ class Entity:
         self.sprite.position = tuple(pos)
         self.sprite.rotation = math.degrees(self.angle)
 
+    @property
+    def grounded(self):
+        return self.get_grounding_details()["body"] is not None
+
+    def get_grounding_details(self):
+        grounding = {
+            "normal": pymunk.Vec2d.zero(),
+            "penetration": pymunk.Vec2d.zero(),
+            "impulse": pymunk.Vec2d.zero(),
+            "position": pymunk.Vec2d.zero(),
+            "body": None
+        }
+
+        def f(arbiter):
+            n = -arbiter.contact_point_set.normal
+            if n.y > grounding["normal"].y:
+                grounding["normal"] = n
+                grounding["penetration"] = - \
+                    arbiter.contact_point_set.points[0].distance
+                grounding["body"] = arbiter.shapes[1].body
+                grounding["impulse"] = arbiter.total_impulse
+                grounding["position"] = arbiter.contact_point_set.points[0].point_b
+
+        self.body.each_arbiter(f)
+
+        return grounding
+
     def delete(self):
         self.space = None
         self.sprite.delete()
