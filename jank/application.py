@@ -10,7 +10,6 @@ pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 
 
 class Application:
-    _debug_mode = False
     _debug_draw_options = pymunk.pyglet_util.DrawOptions()
 
     def __init__(
@@ -21,9 +20,12 @@ class Application:
         world_layers: list = [],
         ui_layers: list = [],
         resizable: bool = True,
-        fps_counter: bool = False
+        fps_counter: bool = False,
+        debug_mode: bool = False
     ):
         self.create_layers(world_layers, ui_layers)
+
+        self.debug_mode = debug_mode
 
         self.default_size = default_size
         self.window = pyglet.window.Window(
@@ -36,8 +38,8 @@ class Application:
         self.window.push_handlers(self)
 
         if fps_counter:
-            self._fps_display = pyglet.window.FPSDisplay(window=self.window)
-            self._fps_display.label.color = (255, 255, 255, 200)
+            self.fps_display = pyglet.window.FPSDisplay(window=self.window)
+            self.fps_display.label.color = (255, 255, 255, 200)
 
         self.key_handler = key.KeyStateHandler()
         self.mouse_handler = mouse.MouseStateHandler()
@@ -53,7 +55,7 @@ class Application:
 
         self.ui_batch = pyglet.graphics.Batch()
         if fps_counter:
-            self._fps_display.label.batch = self.ui_batch
+            self.fps_display.label.batch = self.ui_batch
 
         self.physics_space = pymunk.Space()
         self.entities = []
@@ -62,16 +64,9 @@ class Application:
         self.window.clear()
         with self.world_camera:
             self.world_batch.draw()
-            if self._debug_mode:
+            if self.debug_mode:
                 self.physics_space.debug_draw(self._debug_draw_options)
         self.ui_batch.draw()
-
-    def on_key_press(self, button, modifiers):
-        if button == key.GRAVE:
-            self._debug_mode = not self._debug_mode
-
-    def update(self, dt):
-        self.physics_space.step(dt)
 
     def position_camera(
         self,
@@ -124,11 +119,20 @@ class Application:
                 parent=self.ui_layers["master"]
             )
 
+    def fixed_update(self, dt):
+        """ Called 120 times a second at a fixed rate. Update physics here. """
+
+    def update(self, dt):
+        """ Called as frequently as possible. Update input/graphics here. """
+
+    def _fixed_update(self, dt):
+        self.physics_space.step(dt)
+        self.fixed_update(dt)
+
+    def _update(self, dt):
+        self.update(dt)
+
     def run(self):
-        pyglet.clock.schedule_interval(self.update, 1/120)
+        pyglet.clock.schedule_interval(self._fixed_update, 1/120)
+        pyglet.clock.schedule(self._update)
         pyglet.app.run()
-
-
-if __name__ == "__main__":
-    application = Application()
-    application.run()
