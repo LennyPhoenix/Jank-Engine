@@ -42,7 +42,7 @@ class Client(Application):
                     print(
                         f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                     )
-        except (ConnectionAbortedError, ConnectionResetError) as e:
+        except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
             print("Disconnected.")
 
     def send(self, protocol: str, data: dict):
