@@ -20,7 +20,7 @@ class Client(Application):
 
         super().__init__(*args, **kwargs)
 
-    def protocol(self, name: str) -> function:
+    def protocol(self, name: str):
         def register_protocol(func):
             self._protocols[name] = func
 
