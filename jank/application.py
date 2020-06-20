@@ -21,11 +21,19 @@ class Application:
         ui_layers: list = [],
         resizable: bool = True,
         fps_counter: bool = False,
-        debug_mode: bool = False
+        debug_mode: bool = False,
+        windowless: bool = False
     ):
-        self.create_layers(world_layers, ui_layers)
-
         self.debug_mode = debug_mode
+        self.windowless = windowless
+
+        self.physics_space = pymunk.Space()
+        self.entities = []
+
+        if self.windowless:
+            return
+
+        self.create_layers(world_layers, ui_layers)
 
         self.default_size = default_size
         self.window = pyglet.window.Window(
@@ -56,9 +64,6 @@ class Application:
         self.ui_batch = pyglet.graphics.Batch()
         if fps_counter:
             self.fps_display.label.batch = self.ui_batch
-
-        self.physics_space = pymunk.Space()
-        self.entities = []
 
     def on_draw(self):
         self.window.clear()
