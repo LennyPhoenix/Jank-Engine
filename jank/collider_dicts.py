@@ -2,7 +2,7 @@ import pymunk
 
 RECT = {
     "type": "rect",
-    "x": float, "y": float,
+    "offset": (float, float),
     "width": float, "height": float,
     "radius": float,
     "collision_type": int
@@ -41,10 +41,22 @@ def rect(data):
     collider = pymunk.Poly(
         None,
         vertices=[
-            (data["x"], data["y"]),
-            (data["x"]+data["width"], data["y"]),
-            (data["x"]+data["width"], data["y"]+data["height"]),
-            (data["x"], data["y"]+data["height"])
+            (
+                data["offset"][0],
+                data["offset"][1]
+            ),
+            (
+                data["offset"][0]+data["width"],
+                data["offset"][1]
+            ),
+            (
+                data["offset"][0]+data["width"],
+                data["offset"][1]+data["height"]
+            ),
+            (
+                data["offset"][0],
+                data["offset"][1]+data["height"]
+            )
         ],
         transform=transform,
         radius=data["radius"]
