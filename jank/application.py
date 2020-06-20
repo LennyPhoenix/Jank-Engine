@@ -24,8 +24,8 @@ class Application:
         debug_mode: bool = False,
         windowless: bool = False
     ):
-        self.debug_mode = debug_mode
-        self.windowless = windowless
+        self.debug_mode: bool = debug_mode
+        self.windowless: bool = windowless
 
         self.physics_space = pymunk.Space()
         self.entities = []

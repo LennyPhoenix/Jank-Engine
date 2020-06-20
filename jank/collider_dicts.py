@@ -33,7 +33,7 @@ SEGMENT = {
 }
 
 
-def rect(data):
+def rect(data) -> pymunk.Poly:
     transform = pymunk.Transform(
         tx=-data["width"]/2,
         ty=-data["height"]/2
@@ -65,7 +65,7 @@ def rect(data):
     return collider
 
 
-def poly(data):
+def poly(data) -> pymunk.Poly:
     collider = pymunk.Poly(
         None,
         vertices=data["vertices"],
@@ -75,7 +75,7 @@ def poly(data):
     return collider
 
 
-def circle(data):
+def circle(data) -> pymunk.Circle:
     collider = pymunk.Circle(
         None,
         radius=data["radius"],
@@ -85,7 +85,7 @@ def circle(data):
     return collider
 
 
-def segment(data):
+def segment(data) -> pymunk.Segment:
     collider = pymunk.Segment(
         None,
         a=data["a"],
@@ -96,7 +96,7 @@ def segment(data):
     return collider
 
 
-def dict_to_collider(collider):
+def dict_to_collider(collider) -> pymunk.Shape:
     cols = {
         "poly": poly,
         "rect": rect,

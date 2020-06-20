@@ -35,11 +35,11 @@ class Server(Application):
 
         try:
             while True:
-                header_bytes = self.recvall(c_socket, self._header_size)
+                header_bytes = self.recv_bytes(c_socket, self._header_size)
                 header = header_bytes.decode("utf-8")
                 length = int(header.strip())
 
-                message = self.recvall(c_socket, length)
+                message = self.recv_bytes(c_socket, length)
 
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
@@ -65,9 +65,9 @@ class Server(Application):
             "data": data
         })
         header = bytes(f"{len(message):<{self._header_size}}", "utf-8")
-        return self._socket.sendall(header + message)
+        self._socket.sendall(header + message)
 
-    def recvall(self, socket: socket.socket, buffer: int):
+    def recv_bytes(self, socket: socket.socket, buffer: int) -> bytes:
         message = b""
         while len(message) < buffer:
             message += socket.recv(

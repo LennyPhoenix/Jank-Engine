@@ -20,7 +20,7 @@ class Client(Application):
 
         super().__init__(*args, **kwargs)
 
-    def protocol(self, name: str):
+    def protocol(self, name: str) -> function:
         def register_protocol(func):
             self._protocols[name] = func
 
@@ -29,11 +29,11 @@ class Client(Application):
     def _socket_thread(self):
         try:
             while True:
-                header_bytes = self.recvall(self._header_size)
+                header_bytes = self.recv_bytes(self._header_size)
                 header = header_bytes.decode("utf-8")
                 length = int(header.strip())
 
-                message = self.recvall(length)
+                message = self.recv_bytes(length)
 
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
@@ -51,9 +51,9 @@ class Client(Application):
             "data": data
         })
         header = bytes(f"{len(message):<{self._header_size}}", "utf-8")
-        return self._socket.sendall(header + message)
+        self._socket.sendall(header + message)
 
-    def recvall(self, buffer: int):
+    def recv_bytes(self, buffer: int) -> bytes:
         message = b""
         while len(message) < buffer:
             message += self._socket.recv(

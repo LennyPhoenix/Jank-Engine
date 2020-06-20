@@ -36,7 +36,7 @@ class Entity:
         """ Called as frequently as possible. Update input/graphics here. """
 
     @property
-    def space(self):
+    def space(self) -> pymunk.Space:
         return self._space
 
     @space.setter
@@ -49,7 +49,7 @@ class Entity:
             self.space.add(self.body, *self.colliders)
 
     @property
-    def position(self):
+    def position(self) -> pymunk.Vec2d:
         return self.body.position
 
     @position.setter
@@ -57,7 +57,7 @@ class Entity:
         self.body.position = position
 
     @property
-    def angle(self):
+    def angle(self) -> float:
         return self.body.angle
 
     @angle.setter
@@ -65,7 +65,7 @@ class Entity:
         self.body.angle = angle
 
     @property
-    def angle_degrees(self):
+    def angle_degrees(self) -> float:
         return math.degrees(self.angle)
 
     @angle_degrees.setter
@@ -73,7 +73,7 @@ class Entity:
         self.angle = math.radians(angle_degrees)
 
     @property
-    def flip(self):
+    def flip(self) -> bool:
         return self._flip
 
     @flip.setter
@@ -120,10 +120,10 @@ class Entity:
         self.sprite.rotation = math.degrees(self.angle)
 
     @property
-    def grounded(self):
+    def grounded(self) -> bool:
         return self.get_grounding_details()["body"] is not None
 
-    def get_grounding_details(self):
+    def get_grounding_details(self) -> dict:
         grounding = {
             "normal": pymunk.Vec2d.zero(),
             "penetration": pymunk.Vec2d.zero(),
