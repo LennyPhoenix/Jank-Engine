@@ -29,6 +29,12 @@ class Entity:
         elif collider is not None:
             self.add_collider(collider)
 
+    def fixed_update(self, dt):
+        """ Called 120 times a second at a fixed rate. Update physics here. """
+
+    def update(self, dt):
+        """ Called as frequently as possible. Update input/graphics here. """
+
     @property
     def space(self):
         return self._space
@@ -142,4 +148,6 @@ class Entity:
 
     def delete(self):
         self.space = None
+        pyglet.clock.unschedule(self.update)
+        pyglet.clock.unschedule(self.fixed_update)
         self.sprite.delete()
