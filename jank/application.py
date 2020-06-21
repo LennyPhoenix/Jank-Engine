@@ -11,11 +11,14 @@ pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 _applications = []
 
 
-def get_application(index=0):
-    return _applications[index]
+def get_application(index: int = 0) -> Application:
+    try:
+        return _applications[index]
+    except IndexError:
+        return None
 
 
-def set_application(application):
+def set_application(application: Application):
     _applications.append(application)
 
 
