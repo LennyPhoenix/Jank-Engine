@@ -11,17 +11,6 @@ pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 _applications = []
 
 
-def get_application(index: int = 0) -> Application:
-    try:
-        return _applications[index]
-    except IndexError:
-        return None
-
-
-def set_application(application: Application):
-    _applications.append(application)
-
-
 class Application:
     _debug_draw_options = pymunk.pyglet_util.DrawOptions()
 
@@ -173,3 +162,14 @@ class Application:
         pyglet.clock.schedule_interval(self._fixed_update, 1/120)
         pyglet.clock.schedule(self._update)
         pyglet.app.run()
+
+
+def get_application(index: int = 0) -> Application:
+    try:
+        return _applications[index]
+    except IndexError:
+        return None
+
+
+def set_application(application: Application):
+    _applications.append(application)

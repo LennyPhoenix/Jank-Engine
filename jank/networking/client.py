@@ -62,7 +62,7 @@ class Client(Application):
 
         while True:
             try:
-                self._socket.connect((self._address. self._port))
+                self._socket.connect((self._address, self._port))
                 break
             except TimeoutError:
                 print("Server did not respond, retrying.")
