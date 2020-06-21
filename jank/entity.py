@@ -39,6 +39,10 @@ class Entity:
     def update(self, dt):
         """ Called as frequently as possible. Update input/graphics here. """
 
+    def set_friction(self, friction: float):
+        for collider in self.colliders:
+            collider.friction = friction
+
     @property
     def space(self) -> pymunk.Space:
         return self._space
