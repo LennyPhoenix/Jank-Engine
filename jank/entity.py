@@ -4,6 +4,8 @@ import pickle
 import pyglet
 import pymunk
 
+import jank
+
 from .collider_dicts import dict_to_collider
 
 
@@ -18,6 +20,8 @@ class Entity:
         mass: float = 1, moment: float = float("inf"),
         colliders: list = None, collider: dict = None
     ):
+        jank.get_application().push_handlers(self)
+
         self.body = pymunk.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation)
@@ -148,6 +152,5 @@ class Entity:
 
     def delete(self):
         self.space = None
-        pyglet.clock.unschedule(self.update)
-        pyglet.clock.unschedule(self.fixed_update)
+        jank.get_application().remove_handlers(self)
         self.sprite.delete()

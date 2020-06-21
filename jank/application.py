@@ -8,6 +8,16 @@ from .camera import Camera
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 
+_applications = []
+
+
+def get_application(index=0):
+    return _applications[index]
+
+
+def set_application(application):
+    _applications.append(application)
+
 
 class Application:
     _debug_draw_options = pymunk.pyglet_util.DrawOptions()
@@ -24,6 +34,7 @@ class Application:
         debug_mode: bool = False,
         windowless: bool = False
     ):
+        set_application(self)
         self.debug_mode: bool = debug_mode
         self.windowless: bool = windowless
 
@@ -42,8 +53,9 @@ class Application:
             caption=caption,
             resizable=resizable
         )
+        self._handlers = []
         self.window.set_minimum_size(*minimum_size)
-        self.window.push_handlers(self)
+        self.push_handlers(self)
 
         if fps_counter:
             self.fps_display = pyglet.window.FPSDisplay(window=self.window)
@@ -51,7 +63,7 @@ class Application:
 
         self.key_handler = key.KeyStateHandler()
         self.mouse_handler = mouse.MouseStateHandler()
-        self.window.push_handlers(self.key_handler, self.mouse_handler)
+        self.push_handlers(self.key_handler, self.mouse_handler)
 
         self.world_batch = pyglet.graphics.Batch()
         self.world_camera = Camera(
@@ -64,6 +76,17 @@ class Application:
         self.ui_batch = pyglet.graphics.Batch()
         if fps_counter:
             self.fps_display.label.batch = self.ui_batch
+
+    def push_handlers(self, *handlers):
+        for handler in handlers:
+            self._handlers.append(handler)
+            self.window.push_handlers(handler)
+
+    def remove_handlers(self, *handlers):
+        for handler in handlers:
+            if handler in self._handlers:
+                self._handlers.remove(handler)
+                self.window.remove_handlers(handler)
 
     def on_draw(self):
         self.window.clear()
@@ -133,9 +156,15 @@ class Application:
     def _fixed_update(self, dt):
         self.physics_space.step(dt)
         self.fixed_update(dt)
+        for handler in self._handlers:
+            if hasattr(handler, "fixed_update"):
+                handler.fixed_update(dt)
 
     def _update(self, dt):
         self.update(dt)
+        for handler in self._handlers:
+            if hasattr(handler, "update"):
+                handler.update(dt)
 
     def run(self):
         pyglet.clock.schedule_interval(self._fixed_update, 1/120)
