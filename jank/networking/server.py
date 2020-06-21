@@ -11,8 +11,10 @@ class Server(Application):
     _protocols = {}
     connected = False
 
-    def protocol(self, name: str):
+    def protocol(self, name: str = None):
         def register_protocol(func):
+            if name is None:
+                name = func.__name__
             self._protocols[name] = func
 
         return register_protocol
