@@ -9,16 +9,7 @@ from jank.application import Application
 class Client(Application):
     _header_size = 64
     _protocols = {}
-
-    def __init__(self, address: str, port: int, *args, **kwargs):
-        self._address = address
-        self._port = port
-
-        self._socket = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM
-        )
-
-        super().__init__(*args, **kwargs)
+    connected = False
 
     def protocol(self, name: str):
         def register_protocol(func):
@@ -61,8 +52,14 @@ class Client(Application):
             )
         return message
 
-    def run(self):
-        # TODO: Make this Non-Blocking.
+    def connect(self, address: str, port: int):
+        self._address = address
+        self._port = port
+
+        self._socket = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM
+        )
+
         while True:
             try:
                 self._socket.connect((self._address. self._port))
@@ -76,4 +73,11 @@ class Client(Application):
         )
         socket_thread.start()
 
-        super().run()
+        self.connected = True
+
+    def disconnect(self):
+        # TODO: Make this more elegant.
+        self._socket.close()
+        del self._socket
+
+        self.connected = False

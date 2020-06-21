@@ -9,19 +9,7 @@ from jank.application import Application
 class Server(Application):
     _header_size = 64
     _protocols = {}
-
-    def __init__(self, address: str, port: str, *args, **kwargs):
-        self._address = address
-        self._port = port
-
-        self._socket = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM
-        )
-        self._socket.bind((self._address, self._port))
-
-        self.clients = {}
-
-        super().__init__(*args, **kwargs)
+    connected = False
 
     def protocol(self, name: str):
         def register_protocol(func):
@@ -88,3 +76,29 @@ class Server(Application):
                 daemon=True
             )
             c_thread.start()
+
+    def connect(self, address: str, port: int):
+        self._address = address
+        self._port = port
+
+        self._socket = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM
+        )
+        self._socket.bind((self._address, self._port))
+
+        self.clients = {}
+
+        socket_thread = threading.Thread(
+            target=self._socket_thread,
+            daemon=True
+        )
+        socket_thread.start()
+
+        self.connected = True
+
+    def disconnect(self):
+        # TODO: Make this more elegant.
+        self._socket.close()
+        del self._socket
+
+        self.connected = False
