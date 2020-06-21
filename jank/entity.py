@@ -33,11 +33,11 @@ class Entity:
         elif collider is not None:
             self.add_collider(collider)
 
-    def fixed_update(self, dt):
-        """ Called 120 times a second at a fixed rate. Update physics here. """
-
-    def update(self, dt):
+    def on_update(self, dt):
         """ Called as frequently as possible. Update input/graphics here. """
+
+    def on_fixed_update(self, dt):
+        """ Called 120 times a second at a fixed rate. Update physics here. """
 
     def set_friction(self, friction: float):
         for collider in self.colliders:

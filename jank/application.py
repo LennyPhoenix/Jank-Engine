@@ -139,24 +139,24 @@ class Application:
                 parent=self.ui_layers["master"]
             )
 
-    def fixed_update(self, dt):
+    def on_update(self, dt):
+        """ Called as frequently as possible. Update input/graphics here. """
+
+    def on_fixed_update(self, dt):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
-    def update(self, dt):
-        """ Called as frequently as possible. Update input/graphics here. """
+    def _update(self, dt):
+        self.on_update(dt)
+        for handler in self._handlers:
+            if hasattr(handler, "on_update") and handler is not self:
+                handler.on_update(dt)
 
     def _fixed_update(self, dt):
         self.physics_space.step(dt)
-        self.fixed_update(dt)
+        self.on_fixed_update(dt)
         for handler in self._handlers:
-            if hasattr(handler, "fixed_update"):
-                handler.fixed_update(dt)
-
-    def _update(self, dt):
-        self.update(dt)
-        for handler in self._handlers:
-            if hasattr(handler, "update"):
-                handler.update(dt)
+            if hasattr(handler, "on_fixed_update") and handler is not self:
+                handler.on_fixed_update(dt)
 
     def run(self):
         pyglet.clock.schedule_interval(self._fixed_update, 1/120)
