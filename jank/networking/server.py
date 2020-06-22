@@ -50,9 +50,10 @@ class Server(Application):
             c_socket.close()
             del self.clients[c_address]
 
-    def broadcast(self, protocol: str, data: dict):
+    def broadcast(self, protocol: str, data: dict, exclude: list = None):
         for c_socket in self.clients.values():
-            self.send(c_socket, protocol, data)
+            if exclude is None or c_socket not in exclude:
+                self.send(c_socket, protocol, data)
 
     def send(self, socket: socket.socket, protocol: str, data: dict):
         message = pickle.dumps({
