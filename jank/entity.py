@@ -107,7 +107,9 @@ class Entity:
         self,
         image, offset: tuple,
         batch: pyglet.graphics.Batch = None,
-        group: pyglet.graphics.Group = None
+        group: pyglet.graphics.Group = None,
+        subpixel: bool = False,
+        usage: str = "dynamic"
     ):
         self.sprite_offset = pymunk.Vec2d(offset)
         pos = self.sprite_offset.rotated(self.angle)+self.position
@@ -115,7 +117,9 @@ class Entity:
             image,
             x=pos.x, y=pos.y,
             batch=batch,
-            group=group
+            group=group,
+            subpixel=subpixel,
+            usage=usage
         )
         self.sprite.rotation = self.angle_degrees
 
