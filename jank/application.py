@@ -22,6 +22,7 @@ class Application:
         world_layers: list = [],
         ui_layers: list = [],
         resizable: bool = True,
+        vsync: bool = True,
         fps_counter: bool = False,
         debug_mode: bool = False,
         windowless: bool = False
@@ -43,7 +44,8 @@ class Application:
             width=self.default_size[0],
             height=self.default_size[1],
             caption=caption,
-            resizable=resizable
+            resizable=resizable,
+            vsync=vsync
         )
         self._handlers = []
         self.window.set_minimum_size(*minimum_size)
