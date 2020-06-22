@@ -19,9 +19,14 @@ class Server(Application):
 
         return register_protocol
 
+    def on_connection(self, socket: socket.socket):
+        """ Called on new connection. """
+
     def threaded_client(self, c_socket, c_address):
         print(f"Accepted new connection from {c_address[0]}:{c_address[1]}.")
         self.clients[c_address] = c_socket
+
+        self.on_connection(c_socket)
 
         try:
             while True:
