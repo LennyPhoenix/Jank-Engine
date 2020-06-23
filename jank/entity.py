@@ -124,12 +124,13 @@ class Entity:
         self.sprite.rotation = self.angle_degrees
 
     def update_sprite(self):
-        pos = self.sprite_offset
-        if self.flip:
-            pos.x += self.sprite.width
-        pos = self.position+pos.rotated(self.angle)
-        self.sprite.position = tuple(pos)
-        self.sprite.rotation = math.degrees(self.angle)
+        if hasattr(self, "sprite"):
+            pos = self.sprite_offset
+            if self.flip:
+                pos.x += self.sprite.width
+            pos = self.position+pos.rotated(self.angle)
+            self.sprite.position = tuple(pos)
+            self.sprite.rotation = math.degrees(self.angle)
 
     @property
     def grounded(self) -> bool:
@@ -161,4 +162,5 @@ class Entity:
     def delete(self):
         self.space = None
         jank.get_application().remove_handlers(self)
-        self.sprite.delete()
+        if hasattr(self, "sprite"):
+            self.sprite.delete()

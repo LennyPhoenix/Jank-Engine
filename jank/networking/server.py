@@ -55,7 +55,10 @@ class Server(Application):
     def broadcast(self, protocol: str, data: dict = None, exclude: list = None):
         for c_socket in self.clients.values():
             if exclude is None or c_socket not in exclude:
-                self.send(c_socket, protocol, data)
+                try:
+                    self.send(c_socket, protocol, data)
+                except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
+                    pass
 
     def send(self, socket: socket.socket, protocol: str, data: dict = None):
         if data is None:
@@ -65,7 +68,7 @@ class Server(Application):
             "data": data
         })
         header = bytes(f"{len(message):<{self._header_size}}", "utf-8")
-        self._socket.sendall(header + message)
+        socket.sendall(header + message)
 
     def recv_bytes(self, socket: socket.socket, buffer: int) -> bytes:
         message = b""

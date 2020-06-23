@@ -80,7 +80,7 @@ class Client(Application):
         )
         socket_thread.start()
 
-        self.on_connect(self._socket)
+        self.on_connected(self._socket)
 
         self.connected = True
 

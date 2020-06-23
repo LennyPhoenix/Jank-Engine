@@ -74,13 +74,15 @@ class Application:
     def push_handlers(self, *handlers):
         for handler in handlers:
             self._handlers.append(handler)
-            self.window.push_handlers(handler)
+            if not self.windowless:
+                self.window.push_handlers(handler)
 
     def remove_handlers(self, *handlers):
         for handler in handlers:
             if handler in self._handlers:
                 self._handlers.remove(handler)
-                self.window.remove_handlers(handler)
+                if not self.windowless:
+                    self.window.remove_handlers(handler)
 
     def on_draw(self):
         self.window.clear()
