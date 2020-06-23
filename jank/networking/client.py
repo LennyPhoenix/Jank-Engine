@@ -35,6 +35,7 @@ class Client(Application):
                     )
         except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
             print("Disconnected.")
+            self.on_disconnected(self._socket)
 
     def send(self, protocol: str, data: dict):
         message = pickle.dumps({
@@ -51,6 +52,12 @@ class Client(Application):
                 buffer - len(message)
             )
         return message
+
+    def on_connected(self, socket):
+        """ Called on successfull connection. """
+
+    def on_disconnected(self, socket):
+        """ Called on disconnection. """
 
     def connect(self, address: str, port: int):
         self._address = address
@@ -72,6 +79,8 @@ class Client(Application):
             daemon=True
         )
         socket_thread.start()
+
+        self.on_connect(self._socket)
 
         self.connected = True
 
