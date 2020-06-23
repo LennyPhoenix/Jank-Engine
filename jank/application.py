@@ -13,6 +13,7 @@ _applications = []
 
 class Application:
     _debug_draw_options = pymunk.pyglet_util.DrawOptions()
+    _handlers = []
 
     def __init__(
         self,
@@ -47,7 +48,6 @@ class Application:
             resizable=resizable,
             vsync=vsync
         )
-        self._handlers = []
         self.window.set_minimum_size(*minimum_size)
         self.push_handlers(self)
 
