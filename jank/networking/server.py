@@ -19,8 +19,14 @@ class Server(Application):
 
         return register_protocol
 
+    def register_protocol(self, func, name: str = None):
+        self.protocol(name)(func)
+
     def on_connection(self, socket: socket.socket):
         """ Called on new connection. """
+
+    def on_disconnection(self, socket: socket.socket):
+        """ Called on socket disconnection. """
 
     def threaded_client(self, c_socket, c_address):
         print(f"Accepted new connection from {c_address[0]}:{c_address[1]}.")
@@ -38,7 +44,7 @@ class Server(Application):
 
                 data = pickle.loads(message)
                 if data["protocol"] in self._protocols.keys():
-                    self._protocols[data["protocol"]](**data["data"])
+                    self._protocols[data["protocol"]](c_socket, **data["data"])
                 else:
                     print(
                         f"Recieved invalid/unregistered protocol type: {data['protocol']}"
@@ -49,13 +55,16 @@ class Server(Application):
             )
             c_socket.close()
             del self.clients[c_address]
+            self.on_disconnection(c_socket)
 
-    def broadcast(self, protocol: str, data: dict, exclude: list = None):
+    def broadcast(self, protocol: str, data: dict = None, exclude: list = None):
         for c_socket in self.clients.values():
             if exclude is None or c_socket not in exclude:
                 self.send(c_socket, protocol, data)
 
-    def send(self, socket: socket.socket, protocol: str, data: dict):
+    def send(self, socket: socket.socket, protocol: str, data: dict = None):
+        if data is None:
+            data = {}
         message = pickle.dumps({
             "protocol": protocol,
             "data": data

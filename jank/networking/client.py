@@ -19,6 +19,9 @@ class Client(Application):
 
         return register_protocol
 
+    def register_protocol(self, func, name: str = None):
+        self.protocol(name)(func)
+
     def _socket_thread(self):
         try:
             while True:
