@@ -11,16 +11,11 @@ class Server(Application):
     _protocols = {}
     connected = False
 
-    def protocol(self, name: str = None):
-        def register_protocol(func):
-            if name is None:
-                name = func.__name__
-            self._protocols[name] = func
-
-        return register_protocol
-
     def register_protocol(self, func, name: str = None):
-        self.protocol(name)(func)
+        if name is None:
+            name = func.__name__
+
+        self._protocols[name] = func
 
     def on_connection(self, socket: socket.socket):
         """ Called on new connection. """
