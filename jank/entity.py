@@ -12,7 +12,8 @@ from . import shapes
 
 class Entity:
     _space = None
-    _flip = False
+    _flip_horizontal = False
+    _flip_vertical = False
 
     def __init__(
         self,
@@ -83,17 +84,31 @@ class Entity:
         self.angle = math.radians(angle_degrees)
 
     @property
-    def flip(self) -> bool:
-        return self._flip
+    def flip_horizontal(self) -> bool:
+        return self._flip_horizontal
 
     @flip.setter
-    def flip(self, flip: bool):
-        if self._flip != flip:
-            if flip:
+    def flip_horizontal(self, flip_horizontal: bool):
+        if self._flip_horizontal != flip_horizontal:
+            if flip_horizontal:
                 self.sprite.scale_x = -(abs(self.sprite.scale_x))
             else:
                 self.sprite.scale_x = abs(self.sprite.scale_x)
-            self._flip = flip
+            self._flip_horizontal = flip_horizontal
+            self.update_sprite()
+
+    @property
+    def flip_vertical(self) -> bool:
+        return self._flip_vertical
+
+    @flip.setter
+    def flip_vertical(self, flip_vertical: bool):
+        if self._flip_vertical != flip_vertical:
+            if flip_vertical:
+                self.sprite.scale_x = -(abs(self.sprite.scale_x))
+            else:
+                self.sprite.scale_x = abs(self.sprite.scale_x)
+            self._flip_vertical = flip_vertical
             self.update_sprite()
 
     def add_collider(self, shape: shapes.Base) -> pymunk.Shape:
@@ -130,8 +145,10 @@ class Entity:
     def update_sprite(self):
         if hasattr(self, "sprite"):
             pos = self.sprite_offset
-            if self.flip:
+            if self.flip_horizontal:
                 pos.x += self.sprite.width
+            if self.flip_vertical:
+                pos.y += self.sprite.height
             pos = self.position+pos.rotated(self.angle)
             self.sprite.position = tuple(pos)
             self.sprite.rotation = math.degrees(self.angle)

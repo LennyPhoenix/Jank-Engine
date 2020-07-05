@@ -1,59 +1,5 @@
 import pyglet
 
-"""Camera class for easy scrolling and zooming.
-
-A simple example of a Camera class that can be used to easily scroll and
-zoom when rendering. For example, you might have a playfield that needs  
-to scroll and/or zoom, and a GUI layer that will remain static. For that
-scenario, you can create two Camera instances. You can optionally set
-the minimum allowed zoom, maximum allowed zoom, and scrolling speed::
-
-    world_camera = Camera(scroll_speed=5, min_zoom=1, max_zoom=4)
-    gui_camera = Camera()
-
-After creating Camera instances, the zoom can be easily updated. It will
-clamp to the `max_zoom` parameter (default of 4)::
-
-    world_camera.zoom += 1
-
-The scrolling can be set in two different ways. Directly with the
-`Camera.position attribute, which can be set with a tuple of absolute
-x, y values::
-
-    world_camera.position = 50, 0
-
-Or, it can be updated incrementally with the `Camera.move(x, y)` method.
-This will update the camera position by multiplying the passed vector by
-the `Camera.scroll_speed` parameter, which can be set on instantiation. 
-
-    world_camera.move(1, 0)
-    # If the world_camera.scroll_speed is "5", this will move the camera
-    # by 5 pixels right on the x axis. 
-
-
-During your `Window.on_draw` event, you can set the Camera, and draw the
-appropriate objects. For convenience, the Camera class can act as a context
-manager, allowing easy use of "with"::
-
-    @window.event
-    def on_draw():
-        window.clear()
-    
-        # Draw your world scene using the world camera
-        with world_camera:
-            batch.draw()
-    
-        # Can also be written as:
-        # camera.begin()
-        # batch.draw()
-        # camera.end()
-    
-        # Draw your GUI elements with the GUI camera.
-        with gui_camera:
-            label.draw()
-
-"""
-
 
 class Camera:
     """ A simple 2D camera that contains the speed and offset."""
