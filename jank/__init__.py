@@ -1,6 +1,6 @@
 from pyglet.window import key, mouse
 
-from . import collider_dicts, networking
+from . import shapes, networking
 from .application import Application, get_application
 from .camera import Camera
 from .entity import Entity

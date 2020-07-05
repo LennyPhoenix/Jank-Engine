@@ -23,14 +23,10 @@ class Player(jank.Entity):
         self.label = None
 
         super().__init__(
-            collider={
-                "type": "rect",
-                "offset": (0, 0),
-                "width": 16,
-                "height": 16,
-                "radius": 0,
-                "collision_type": 0
-            }
+            collider=jank.shapes.Rect(
+                width=16,
+                height=16
+            )
         )
         self.space = jank.get_application().physics_space
 

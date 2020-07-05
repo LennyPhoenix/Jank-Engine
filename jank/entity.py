@@ -1,12 +1,13 @@
 import math
 import pickle
+from typing import List
 
 import pyglet
 import pymunk
 
 import jank
 
-from .collider_dicts import dict_to_collider
+from . import shapes
 
 
 class Entity:
@@ -18,7 +19,8 @@ class Entity:
         position: tuple = (0, 0), rotation: float = 0,
         body_type: int = pymunk.Body.DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
-        colliders: list = None, collider: dict = None
+        colliders: List[shapes.Base] = None,
+        collider: shapes.Base = None
     ):
         jank.get_application().push_handlers(self)
 
@@ -94,14 +96,16 @@ class Entity:
             self._flip = flip
             self.update_sprite()
 
-    def add_collider(self, collider: dict):
-        col = dict_to_collider(collider)
+    def add_collider(self, shape: shapes.Base) -> pymunk.Shape:
+        col = shapes.initialise_shape(shape)
         col.body = self.body
 
         if self.space is not None:
             self.space.add(col)
 
         self.colliders.append(col)
+
+        return col
 
     def create_sprite(
         self,
