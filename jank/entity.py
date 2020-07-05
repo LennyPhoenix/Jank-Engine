@@ -1,6 +1,6 @@
 import math
 import pickle
-from typing import List
+from typing import List, Tuple
 
 import pyglet
 import pymunk
@@ -17,7 +17,8 @@ class Entity:
 
     def __init__(
         self,
-        position: tuple = (0, 0), rotation: float = 0,
+        position: Tuple[float, float] = (0, 0),
+        rotation: float = 0,
         body_type: int = pymunk.Body.DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
         colliders: List[shapes.Base] = None,
@@ -64,7 +65,7 @@ class Entity:
         return self.body.position
 
     @position.setter
-    def position(self, position: tuple):
+    def position(self, position: Tuple[float, float]):
         self.body.position = position
 
     @property
@@ -124,7 +125,7 @@ class Entity:
 
     def create_sprite(
         self,
-        image, offset: tuple,
+        image, offset: Tuple[float, float],
         batch: pyglet.graphics.Batch = None,
         group: pyglet.graphics.Group = None,
         subpixel: bool = False,

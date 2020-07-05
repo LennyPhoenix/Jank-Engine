@@ -1,4 +1,5 @@
 from queue import Queue
+from typing import List, Tuple
 
 import pyglet
 import pymunk
@@ -22,10 +23,10 @@ class Application:
     def __init__(
         self,
         caption: str = None,
-        default_size: tuple = (1000, 800),
-        minimum_size: tuple = (100, 100),
-        world_layers: list = [],
-        ui_layers: list = [],
+        default_size: Tuple[int, int] = (1000, 800),
+        minimum_size: Tuple[int, int] = (100, 100),
+        world_layers: List[str] = [],
+        ui_layers: List[str] = [],
         resizable: bool = True,
         vsync: bool = True,
         fps_counter: bool = False,
@@ -74,6 +75,30 @@ class Application:
         self.ui_batch = pyglet.graphics.Batch()
         if fps_counter:
             self.fps_display.label.batch = self.ui_batch
+
+    def screen_to_world(self, position: Tuple[float, float]) -> Tuple[float, float]:
+        """ Convert a screen position to a world position. """
+        x, y = position
+
+        x /= self.world_camera.zoom
+        y /= self.world_camera.zoom
+
+        x += self.world_camera.offset_x
+        y += self.world_camera.offset_y
+
+        return (x, y)
+
+    def world_to_screen(self, position: Tuple[float, float]) -> Tuple[float, float]:
+        """ Convert a world position to a screen position. """
+        x, y = position
+
+        x -= self.world_camera.offset_x
+        y -= self.world_camera.offset_y
+
+        x *= self.world_camera.zoom
+        y *= self.world_camera.zoom
+
+        return (x, y)
 
     def push_handlers(self, *handlers):
         for handler in handlers:
