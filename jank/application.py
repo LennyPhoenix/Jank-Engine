@@ -1,3 +1,5 @@
+from queue import Queue
+
 import pyglet
 import pymunk
 import pymunk.pyglet_util
@@ -14,6 +16,8 @@ _applications = []
 class Application:
     _debug_draw_options = pymunk.pyglet_util.DrawOptions()
     _handlers = []
+    _function_queue_soft = Queue()
+    _function_queue_hard = Queue()
 
     def __init__(
         self,
@@ -149,7 +153,25 @@ class Application:
     def on_fixed_update(self, dt):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
+    def queue_hard(self, func, *args, **kwargs):
+        """ Adds a function to the hard queue. """
+        item = (func, args, kwargs)
+        self._function_queue_hard.put_nowait(item, args, kwargs)
+
+    def queue_soft(self, func, *args, **kwargs):
+        """ Adds a function to the soft queue. """
+        item = (func, args, kwargs)
+        self._function_queue_soft.put_nowait(item, args, kwargs)
+
     def _update(self, dt):
+        if not self._function_queue_soft.empty():
+            func = self._function_queue_soft.get_nowait()
+            func[0](*func[1], **func[2])
+
+        while not self._function_queue_hard.empty():
+            func = self._function_queue_hard.get_nowait()
+            func[0](*func[1], **func[2])
+
         self.on_update(dt)
         for handler in self._handlers:
             if hasattr(handler, "on_update") and handler is not self:
