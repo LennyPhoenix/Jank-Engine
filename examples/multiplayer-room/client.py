@@ -8,20 +8,23 @@ import time
 import threading
 
 
+IP = "localhost"
+PORT = 5555
+
+
 class Client(jank.networking.Client):
+    CAPTION = "Jank Engine, Multiplayer Example"
+    DEFAULT_SIZE = (800, 800)
+    MINIMUM_SIZE = (400, 400)
+    WORLD_LAYERS = [
+        "floor",
+        "player",
+        "name_tags",
+        "objects"
+    ]
+
     def __init__(self):
-        super().__init__(
-            caption="Jank Engine, Multiplayer Example",
-            default_size=(800, 800),
-            minimum_size=(400, 400),
-            world_layers=[
-                "floor",
-                "player",
-                "name_tags",
-                "objects"
-            ],
-            fps_counter=True
-        )
+        super().__init__(show_fps=True)
         self.players = {}
         self.sprite_queue = []
 
@@ -79,6 +82,9 @@ class Client(jank.networking.Client):
             sprite.create_sprite()
             self.sprite_queue.remove(sprite)
 
+    def on_fixed_update(self, dt):
+        self.physics_space.step(dt)
+
     def on_key_press(self, key, modifiers):
         if key == jank.key.GRAVE:
             self.debug_mode = not self.debug_mode
@@ -99,8 +105,8 @@ class Client(jank.networking.Client):
 
     def run(self):
         self.connect(
-            address="localhost",
-            port=25565
+            address=IP,
+            port=PORT
         )
         super().run()
 

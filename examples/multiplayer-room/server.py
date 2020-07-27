@@ -2,11 +2,14 @@ import jank
 import source
 
 
+IP = "localhost"
+PORT = 5555
+
+
 class Server(jank.networking.Server):
+
     def __init__(self):
-        super().__init__(
-            windowless=True
-        )
+        super().__init__(windowless=True)
         self.players = {}
         self.usernames = {}
 
@@ -54,6 +57,7 @@ class Server(jank.networking.Server):
             )
 
     def on_fixed_update(self, dt):
+        self.physics_space.step(1/120)
         positions = {
             username: {
                 "position": tuple(player.position),
@@ -68,8 +72,8 @@ class Server(jank.networking.Server):
 
     def run(self):
         self.connect(
-            address="localhost",
-            port=25565
+            address=IP,
+            port=PORT
         )
         super().run()
 
