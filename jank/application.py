@@ -7,6 +7,7 @@ import pymunk.pyglet_util
 from pyglet.window import key, mouse
 
 from .camera import Camera
+from .config import Config
 
 pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
 pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
@@ -22,23 +23,15 @@ class Application:
     _function_queue_soft_fixed = Queue()
     _function_queue_hard_fixed = Queue()
 
-    # Config Options: these should be changed here.
-    CAPTION: str = None
-    DEFAULT_SIZE: Tuple[int, int] = (1000, 800)
-    MINIMUM_SIZE: Tuple[int, int] = (100, 100)
-    RESIZABLE: bool = True
-    VSYNC: bool = True
-    FPS_LABEL: pyglet.text.Label = None
-    WORLD_LAYERS: List[str] = []
-    UI_LAYERS: List[str] = []
-
     def __init__(
         self,
+        config: Config = Config(),
         windowless: bool = False,
         debug_mode: bool = False,
         show_fps: bool = False
     ):
         set_application(self)
+        self.config = config
         self.windowless = windowless
         self.debug_mode = debug_mode
         self.show_fps = show_fps
@@ -48,21 +41,21 @@ class Application:
         if self.windowless:
             return
 
-        self.create_layers(self.WORLD_LAYERS, self.UI_LAYERS)
+        self.create_layers(self.config.world_layers, self.config.ui_layers)
 
         self.window = pyglet.window.Window(
-            width=self.DEFAULT_SIZE[0],
-            height=self.DEFAULT_SIZE[1],
-            caption=self.CAPTION,
-            resizable=self.RESIZABLE,
-            vsync=self.VSYNC
+            width=self.config.default_size[0],
+            height=self.config.default_size[1],
+            caption=self.config.caption,
+            resizable=self.config.resizable,
+            vsync=self.config.vsync
         )
-        self.window.set_minimum_size(*self.MINIMUM_SIZE)
+        self.window.set_minimum_size(*self.config.minimum_size)
         self.push_handlers(self)
 
         self.fps_display = pyglet.window.FPSDisplay(window=self.window)
-        if self.FPS_LABEL is not None:
-            self.fps_display.label = self.FPS_LABEL
+        if self.config.fps_label is not None:
+            self.fps_display.label = self.config.fps_label
 
         self.key_handler = key.KeyStateHandler()
         self.mouse_handler = mouse.MouseStateHandler()
@@ -126,12 +119,14 @@ class Application:
 
     def position_camera(
         self,
-        position: tuple = (0, 0), zoom: float = 1,
-        min_pos: tuple = (None, None), max_pos: tuple = (None, None)
+        zoom: float = 1,
+        position: Tuple[int, int] = (0, 0),
+        min_pos: Tuple[int, int] = (None, None),
+        max_pos: Tuple[int, int] = (None, None)
     ):
         zoom = min(
-            self.window.width/self.DEFAULT_SIZE[0],
-            self.window.height/self.DEFAULT_SIZE[1]
+            self.window.width/self.config.default_size[0],
+            self.window.height/self.config.default_size[1]
         ) * zoom
 
         if self.world_camera.zoom != zoom:

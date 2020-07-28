@@ -13,18 +13,20 @@ PORT = 5555
 
 
 class Client(jank.networking.Client):
-    CAPTION = "Jank Engine, Multiplayer Example"
-    DEFAULT_SIZE = (800, 800)
-    MINIMUM_SIZE = (400, 400)
-    WORLD_LAYERS = [
-        "floor",
-        "player",
-        "name_tags",
-        "objects"
-    ]
-
     def __init__(self):
-        super().__init__(show_fps=True)
+        config = jank.Config(
+            caption="Jank Engine, Multiplayer Example",
+            default_size=(800, 800),
+            minimum_size=(400, 400),
+            world_layers=[
+                "floor",
+                "player",
+                "name_tags",
+                "objects"
+            ]
+        )
+
+        super().__init__(config=config, show_fps=True)
         self.players = {}
         self.sprite_queue = []
 

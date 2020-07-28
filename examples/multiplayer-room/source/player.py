@@ -46,7 +46,6 @@ class Player(jank.Entity):
         image = pyglet.image.load("resources/player.png")
         super().create_sprite(
             image,
-            offset=(-8, -8),
             batch=jank.get_application().world_batch,
             group=jank.get_application().world_layers["player"],
             subpixel=True

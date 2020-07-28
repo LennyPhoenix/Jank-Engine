@@ -11,6 +11,10 @@ from . import shapes
 
 
 class Entity:
+    STATIC = pymunk.Body.STATIC
+    DYNAMIC = pymunk.Body.DYNAMIC
+    KINEMATIC = pymunk.Body.KINEMATIC
+
     _space = None
     _flip_x = False
     _flip_y = False
@@ -18,8 +22,8 @@ class Entity:
     def __init__(
         self,
         position: Tuple[float, float] = (0, 0),
-        rotation: float = 0,
-        body_type: int = pymunk.Body.DYNAMIC,
+        rotation_degrees: float = 0,
+        body_type: int = DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
         colliders: List[shapes.Base] = None,
         collider: shapes.Base = None
@@ -28,7 +32,7 @@ class Entity:
 
         self.body = pymunk.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
-        self.angle = math.radians(rotation)
+        self.angle = math.radians(rotation_degrees)
         self.colliders = []
 
         if colliders is not None:
@@ -39,6 +43,7 @@ class Entity:
 
     def on_update(self, dt):
         """ Called as frequently as possible. Update input/graphics here. """
+        self.update_sprite()
 
     def on_fixed_update(self, dt):
         """ Called 120 times a second at a fixed rate. Update physics here. """
@@ -125,13 +130,17 @@ class Entity:
 
     def create_sprite(
         self,
-        image, offset: Tuple[float, float],
+        image,
+        offset: Tuple[float, float] = (0, 0),
         batch: pyglet.graphics.Batch = None,
         group: pyglet.graphics.Group = None,
         subpixel: bool = False,
         usage: str = "dynamic"
     ):
-        self.sprite_offset = pymunk.Vec2d(offset)
+        self.sprite_offset = pymunk.Vec2d(
+            offset[0]-image.width//2,
+            offset[1]-image.height//2
+        )
         pos = self.sprite_offset.rotated(self.angle)+self.position
         self.sprite = pyglet.sprite.Sprite(
             image,
@@ -152,7 +161,7 @@ class Entity:
                 pos.y += self.sprite.height
             pos = self.position+pos.rotated(self.angle)
             self.sprite.position = tuple(pos)
-            self.sprite.rotation = math.degrees(self.angle)
+            self.sprite.rotation = -self.angle_degrees
 
     @property
     def grounded(self) -> bool:
