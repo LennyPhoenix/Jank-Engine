@@ -7,6 +7,7 @@ import pyglet
 @dataclass
 class Config:
     caption: str = None
+    icon: pyglet.image.ImageData = None
     default_size: Tuple[int, int] = (1000, 800)
     minimum_size: Tuple[int, int] = (100, 100)
     resizable: bool = True

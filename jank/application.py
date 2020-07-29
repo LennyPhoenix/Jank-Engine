@@ -50,6 +50,8 @@ class Application:
             resizable=self.config.resizable,
             vsync=self.config.vsync
         )
+        if self.config.icon is not None:
+            self.window.set_icon(self.config.icon)
         self.window.set_minimum_size(*self.config.minimum_size)
         self.push_handlers(self)
 
