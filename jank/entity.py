@@ -70,8 +70,16 @@ class Entity:
         return self.body.position
 
     @position.setter
-    def position(self, position: Tuple[float, float]):
+    def position(self, position: pymunk.Vec2d):
         self.body.position = position
+
+    @property
+    def velocity(self) -> pymunk.Vec2d:
+        return self.body.velocity
+
+    @velocity.setter
+    def velocity(self, velocity: pymunk.Vec2d):
+        self.body.velocity = velocity
 
     @property
     def angle(self) -> float:
