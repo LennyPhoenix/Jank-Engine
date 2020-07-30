@@ -28,8 +28,6 @@ class Entity:
         colliders: t.List[shapes.Base] = None,
         collider: shapes.Base = None
     ):
-        jank.get_application().push_handlers(self)
-
         self.body = pymunk.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation_degrees)
@@ -40,6 +38,8 @@ class Entity:
                 self.add_collider(col)
         elif collider is not None:
             self.add_collider(collider)
+
+        jank.get_application().push_handlers(self)
 
     def on_update(self, dt: float):
         """ Called as frequently as possible. Update input/graphics here. """
