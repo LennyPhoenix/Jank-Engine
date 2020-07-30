@@ -155,7 +155,7 @@ class Application:
         if self.world_camera.position != (x, y):
             self.world_camera.position = (x, y)
 
-    def create_layers(self, world_layers: List[str], ui_layers: List[str]):
+    def create_layers(self, world_layers: t.List[str], ui_layers: t.List[str]):
         self.world_layers = {}
         self.world_layers["master"] = pyglet.graphics.Group()
         for layer in world_layers:
