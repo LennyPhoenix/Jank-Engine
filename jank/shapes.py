@@ -1,7 +1,7 @@
 import pymunk
 
 from dataclasses import dataclass, field
-from typing import List, Tuple
+import typing as t
 
 
 @dataclass
@@ -18,26 +18,26 @@ class Base:
 class Rect(Base):
     width: float = 10.0
     height: float = 10.0
-    offset: Tuple[float, float] = (0.0, 0.0)
+    offset: t.Tuple[float, float] = (0.0, 0.0)
 
 
 @dataclass
 class Poly(Base):
-    vertices: List[Tuple[float, float]] = field(default_factory=list)
+    vertices: t.List[t.Tuple[float, float]] = field(default_factory=list)
 
 
 @dataclass
 class Circle(Base):
-    offset: Tuple[float, float] = (0.0, 0.0)
+    offset: t.Tuple[float, float] = (0.0, 0.0)
 
 
 @dataclass
 class Segment(Base):
-    a: Tuple[float, float] = (-5, 0)
-    b: Tuple[float, float] = (5, 0)
+    a: t.Tuple[float, float] = (-5, 0)
+    b: t.Tuple[float, float] = (5, 0)
 
 
-def rect(data: Rect) -> pymunk.Poly:
+def init_rect(data: Rect) -> pymunk.Poly:
     transform = pymunk.Transform(
         tx=-data.width/2,
         ty=-data.height/2
@@ -68,7 +68,7 @@ def rect(data: Rect) -> pymunk.Poly:
     return collider
 
 
-def poly(data) -> pymunk.Poly:
+def init_poly(data) -> pymunk.Poly:
     collider = pymunk.Poly(
         None,
         vertices=data.vertices,
@@ -77,7 +77,7 @@ def poly(data) -> pymunk.Poly:
     return collider
 
 
-def circle(data) -> pymunk.Circle:
+def init_circle(data) -> pymunk.Circle:
     collider = pymunk.Circle(
         None,
         radius=data.radius,
@@ -86,7 +86,7 @@ def circle(data) -> pymunk.Circle:
     return collider
 
 
-def segment(data) -> pymunk.Segment:
+def init_segment(data) -> pymunk.Segment:
     collider = pymunk.Segment(
         None,
         a=data.a,
@@ -98,10 +98,10 @@ def segment(data) -> pymunk.Segment:
 
 def initialise_shape(shape) -> pymunk.Shape:
     shapes = {
-        Rect: rect,
-        Poly: poly,
-        Circle: circle,
-        Segment: segment
+        Rect: init_rect,
+        Poly: init_poly,
+        Circle: init_circle,
+        Segment: init_segment
     }
 
     collider: pymunk.Shape = shapes[type(shape)](shape)

@@ -1,6 +1,6 @@
 import math
 import pickle
-from typing import List, Tuple
+import typing as t
 
 import pyglet
 import pymunk
@@ -11,21 +11,21 @@ from . import shapes
 
 
 class Entity:
-    STATIC = pymunk.Body.STATIC
-    DYNAMIC = pymunk.Body.DYNAMIC
-    KINEMATIC = pymunk.Body.KINEMATIC
+    STATIC: int = pymunk.Body.STATIC
+    DYNAMIC: int = pymunk.Body.DYNAMIC
+    KINEMATIC: int = pymunk.Body.KINEMATIC
 
-    _space = None
-    _flip_x = False
-    _flip_y = False
+    _space: pymunk.Space = None
+    _flip_x: bool = False
+    _flip_y: bool = False
 
     def __init__(
         self,
-        position: Tuple[float, float] = (0, 0),
+        position: t.Tuple[float, float] = (0, 0),
         rotation_degrees: float = 0,
         body_type: int = DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
-        colliders: List[shapes.Base] = None,
+        colliders: t.List[shapes.Base] = None,
         collider: shapes.Base = None
     ):
         jank.get_application().push_handlers(self)
@@ -33,7 +33,7 @@ class Entity:
         self.body = pymunk.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation_degrees)
-        self.colliders = []
+        self.colliders: t.List[pymunk.Shape] = []
 
         if colliders is not None:
             for col in colliders:
@@ -41,11 +41,11 @@ class Entity:
         elif collider is not None:
             self.add_collider(collider)
 
-    def on_update(self, dt):
+    def on_update(self, dt: float):
         """ Called as frequently as possible. Update input/graphics here. """
         self.update_sprite()
 
-    def on_fixed_update(self, dt):
+    def on_fixed_update(self, dt: float):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
     def set_friction(self, friction: float):
@@ -139,7 +139,7 @@ class Entity:
     def create_sprite(
         self,
         image,
-        offset: Tuple[float, float] = (0, 0),
+        offset: t.Tuple[float, float] = (0, 0),
         batch: pyglet.graphics.Batch = None,
         group: pyglet.graphics.Group = None,
         subpixel: bool = False,

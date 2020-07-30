@@ -1,4 +1,4 @@
-from typing import List, Tuple
+import typing as t
 from queue import Queue
 
 import pyglet
@@ -16,12 +16,12 @@ _applications = []
 
 
 class Application:
-    _debug_draw_options = pymunk.pyglet_util.DrawOptions()
-    _handlers = []
-    _function_queue_soft = Queue()
-    _function_queue_hard = Queue()
-    _function_queue_soft_fixed = Queue()
-    _function_queue_hard_fixed = Queue()
+    _debug_draw_options: pymunk.SpaceDebugDrawOptions = pymunk.pyglet_util.DrawOptions()
+    _handlers: t.List[t.Any] = []
+    _function_queue_soft: Queue = Queue()
+    _function_queue_hard: Queue = Queue()
+    _function_queue_soft_fixed: Queue = Queue()
+    _function_queue_hard_fixed: Queue = Queue()
 
     def __init__(
         self,
@@ -72,7 +72,7 @@ class Application:
         )
         self.position_camera()
 
-    def screen_to_world(self, position: Tuple[float, float]) -> Tuple[float, float]:
+    def screen_to_world(self, position: t.Tuple[float, float]) -> t.Tuple[float, float]:
         """ Convert a screen position to a world position. """
         x, y = position
 
@@ -84,7 +84,7 @@ class Application:
 
         return (x, y)
 
-    def world_to_screen(self, position: Tuple[float, float]) -> Tuple[float, float]:
+    def world_to_screen(self, position: t.Tuple[float, float]) -> t.Tuple[float, float]:
         """ Convert a world position to a screen position. """
         x, y = position
 
@@ -122,9 +122,9 @@ class Application:
     def position_camera(
         self,
         zoom: float = 1,
-        position: Tuple[int, int] = (0, 0),
-        min_pos: Tuple[int, int] = (None, None),
-        max_pos: Tuple[int, int] = (None, None)
+        position: t.Tuple[int, int] = (0, 0),
+        min_pos: t.Tuple[int, int] = (None, None),
+        max_pos: t.Tuple[int, int] = (None, None)
     ):
         zoom = min(
             self.window.width/self.config.default_size[0],
@@ -155,7 +155,7 @@ class Application:
         if self.world_camera.position != (x, y):
             self.world_camera.position = (x, y)
 
-    def create_layers(self, world_layers: list, ui_layers: list):
+    def create_layers(self, world_layers: List[str], ui_layers: List[str]):
         self.world_layers = {}
         self.world_layers["master"] = pyglet.graphics.Group()
         for layer in world_layers:
@@ -178,7 +178,7 @@ class Application:
     def on_fixed_update(self, dt: float):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
-    def queue_hard(self, func, fixed_update: bool, *args, **kwargs):
+    def queue_hard(self, func: t.Callable[..., t.Any], fixed_update: bool, *args, **kwargs):
         """ Adds a function to the hard queue. """
         item = (func, args, kwargs)
         if fixed_update:
@@ -186,7 +186,7 @@ class Application:
         else:
             self._function_queue_hard.put_nowait(item)
 
-    def queue_soft(self, func, fixed_update: bool, *args, **kwargs):
+    def queue_soft(self, func: t.Callable[..., t.Any], fixed_update: bool, *args, **kwargs):
         """ Adds a function to the soft queue. """
         item = (func, args, kwargs)
         if fixed_update:
@@ -194,7 +194,7 @@ class Application:
         else:
             self._function_queue_soft.put_nowait(item)
 
-    def _update(self, dt):
+    def _update(self, dt: float):
         if not self._function_queue_soft.empty():
             item = self._function_queue_soft.get_nowait()
             item[0](*item[1], **item[2])
@@ -208,7 +208,7 @@ class Application:
             if hasattr(handler, "on_update") and handler is not self:
                 handler.on_update(dt)
 
-    def _fixed_update(self, dt):
+    def _fixed_update(self, dt: float):
         if not self._function_queue_soft_fixed.empty():
             func = self._function_queue_soft_fixed.get_nowait()
             func[0](*func[1], **func[2])
