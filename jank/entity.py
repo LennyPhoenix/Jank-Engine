@@ -105,9 +105,9 @@ class Entity:
     def flip_x(self, flip_x: bool):
         if self._flip_x != flip_x:
             if flip_x:
-                self.sprite.scale_x = -(abs(self.sprite.scale_x))
+                self.scale_x = -(abs(self.scale_x))
             else:
-                self.sprite.scale_x = abs(self.sprite.scale_x)
+                self.scale_x = abs(self.scale_x)
             self._flip_x = flip_x
             self.update_sprite()
 
@@ -119,11 +119,51 @@ class Entity:
     def flip_y(self, flip_y: bool):
         if self._flip_y != flip_y:
             if flip_y:
-                self.sprite.scale_y = -(abs(self.sprite.scale_y))
+                self.scale_y = -(abs(self.scale_y))
             else:
-                self.sprite.scale_y = abs(self.sprite.scale_y)
+                self.scale_y = abs(self.scale_y)
             self._flip_y = flip_y
             self.update_sprite()
+
+    @property
+    def scale(self) -> float:
+        return self.sprite.scale
+
+    @scale.setter
+    def scale(self, scale: float):
+        self.sprite.scale = scale
+
+    @property
+    def scale_x(self) -> float:
+        return self.sprite.scale_x
+
+    @scale_x.setter
+    def scale_x(self, scale_x: float):
+        self.sprite.scale_x = scale_x
+
+    @property
+    def scale_y(self) -> float:
+        return self.sprite.scale_y
+
+    @scale_y.setter
+    def scale_y(self, scale_y: float):
+        self.sprite.scale_y = scale_y
+
+    @property
+    def base_width(self) -> float:
+        return self.sprite.width / abs(self.scale_x) / abs(self.scale)
+
+    @property
+    def base_height(self) -> float:
+        return self.sprite.height / abs(self.scale_y) / abs(self.scale)
+
+    @property
+    def scaled_width(self) -> float:
+        return self.base_width * self.scale_x * self.scale
+
+    @property
+    def scaled_height(self) -> float:
+        return self.base_height * self.scale_y * self.scale
 
     def add_collider(self, shape: shapes.Base) -> pymunk.Shape:
         col = shapes.initialise_shape(shape)
@@ -145,28 +185,22 @@ class Entity:
         subpixel: bool = False,
         usage: str = "dynamic"
     ):
-        self.sprite_offset = pymunk.Vec2d(
-            offset[0]-image.width//2,
-            offset[1]-image.height//2
-        )
-        pos = self.sprite_offset.rotated(self.angle)+self.position
+        self.sprite_offset = offset
         self.sprite = pyglet.sprite.Sprite(
             image,
-            x=pos.x, y=pos.y,
+            x=0, y=0,
             batch=batch,
             group=group,
             subpixel=subpixel,
             usage=usage
         )
-        self.sprite.rotation = self.angle_degrees
+        self.update_sprite()
 
     def update_sprite(self):
         if hasattr(self, "sprite"):
-            pos = self.sprite_offset
-            if self.flip_x:
-                pos.x += self.sprite.width
-            if self.flip_y:
-                pos.y += self.sprite.height
+            pos = jank.Vec2d(self.sprite_offset)
+            pos.x -= self.scaled_width/2
+            pos.y -= self.scaled_height/2
             pos = self.position+pos.rotated(self.angle)
             self.sprite.position = tuple(pos)
             self.sprite.rotation = -self.angle_degrees
