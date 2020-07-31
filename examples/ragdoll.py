@@ -212,11 +212,11 @@ class Ragdoll:
                 math.radians(self.L_LEG_LIMIT[1])
             )
 
-    @ property
+    @property
     def space(self) -> jank.physics.Space:
         return self.torso.space
 
-    @ space.setter
+    @space.setter
     def space(self, space: jank.physics.Space):
         self.torso.space = space
         if hasattr(self, "head"):
@@ -294,11 +294,11 @@ class Application(jank.Application):
         if button == jank.key.SPACE:
             self.paused = not self.paused
 
-    @ property
+    @property
     def paused(self) -> bool:
         return self._paused
 
-    @ paused.setter
+    @paused.setter
     def paused(self, paused: bool):
         self._paused = paused
         if paused:
