@@ -139,7 +139,6 @@ class Client(Application):
                     message, c_address = self._socket_udp.recvfrom(
                         self._udp_buffer
                     )
-                    print(len(message))
 
                     data = pickle.loads(message)
                     if c_address != self._socket_tcp.getpeername():

@@ -178,7 +178,6 @@ class Server(Application):
                 message, c_address = self._socket_udp.recvfrom(
                     self._udp_buffer
                 )
-                print(len(message))
 
                 data = pickle.loads(message)
                 if c_address not in self._udp_addresses.values():
