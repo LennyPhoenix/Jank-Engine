@@ -8,8 +8,8 @@ import time
 import threading
 
 
-IP = "localhost"
-PORT = 5555
+IP = "doaltplusf4.ddns.net"
+PORT = 25565
 
 
 class Client(jank.networking.Client):
@@ -77,7 +77,10 @@ class Client(jank.networking.Client):
     def on_update(self, dt):
         self.position_camera(position=(0, 0), zoom=5)
         if self.name_chosen and self.player is not None:
-            self.send("player_controls", self.player.controls)
+            self.send(
+                "player_controls", self.player.controls,
+                network_protocol=self.UDP
+            )
 
         if len(self.sprite_queue) > 0:
             sprite = self.sprite_queue[0]
@@ -85,13 +88,14 @@ class Client(jank.networking.Client):
             self.sprite_queue.remove(sprite)
 
     def on_fixed_update(self, dt):
-        self.physics_space.step(dt)
+        for _ in range(5):
+            self.physics_space.step(dt/5)
 
     def on_key_press(self, key, modifiers):
         if key == jank.key.GRAVE:
             self.debug_mode = not self.debug_mode
 
-    def on_connected(self, socket):
+    def on_connection(self, socket):
         def name_loop():
             while not self.name_chosen:
                 name = input("Choose Username: ")
@@ -108,7 +112,8 @@ class Client(jank.networking.Client):
     def run(self):
         self.connect(
             address=IP,
-            port=PORT
+            port=PORT,
+            enable_udp=True
         )
         super().run()
 

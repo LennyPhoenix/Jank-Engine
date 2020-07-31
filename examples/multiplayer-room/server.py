@@ -2,8 +2,8 @@ import jank
 import source
 
 
-IP = "localhost"
-PORT = 5555
+IP = ""
+PORT = 25565
 
 
 class Server(jank.networking.Server):
@@ -57,7 +57,8 @@ class Server(jank.networking.Server):
             )
 
     def on_fixed_update(self, dt):
-        self.physics_space.step(1/120)
+        for _ in range(10):
+            self.physics_space.step(1/1200)
         positions = {
             username: {
                 "position": tuple(player.position),
@@ -67,13 +68,15 @@ class Server(jank.networking.Server):
         }
         self.broadcast(
             "player_positions",
-            positions
+            positions,
+            network_protocol=self.UDP
         )
 
     def run(self):
         self.connect(
             address=IP,
-            port=PORT
+            port=PORT,
+            enable_udp=True
         )
         super().run()
 

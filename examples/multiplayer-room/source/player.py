@@ -1,8 +1,5 @@
 import random
 
-import pyglet
-import pymunk
-
 import jank
 from jank import key
 
@@ -30,27 +27,27 @@ class Player(jank.Entity):
         )
         self.space = jank.get_application().physics_space
 
-        self.velocity = pymunk.Vec2d.zero()
+        self.v = jank.Vec2d.zero()
 
-        def velocity_func(body: pymunk.Body, gravity, damping, dt):
-            body.velocity = self.velocity
+        def velocity_func(body: jank.physics.Body, gravity, damping, dt):
+            body.velocity = self.v
 
         self.body.velocity_func = velocity_func
 
-        def position_func(body: pymunk.Body, dt):
-            pymunk.Body.update_position(body, dt)
+        def position_func(body: jank.physics.Body, dt):
+            jank.physics.Body.update_position(body, dt)
 
         self.body.position_func = position_func
 
     def create_sprite(self):
-        image = pyglet.image.load("resources/player.png")
+        image = jank.pyglet.resource.image("resources/player.png")
         super().create_sprite(
             image,
             batch=jank.get_application().world_batch,
             group=jank.get_application().world_layers["player"],
             subpixel=True
         )
-        self.label = pyglet.text.Label(
+        self.label = jank.pyglet.text.Label(
             text=self.player_id,
             font_size=8,
             anchor_x="center",
@@ -69,23 +66,28 @@ class Player(jank.Entity):
                 "right": key_handler[key.D]
             }
 
-        self.velocity = pymunk.Vec2d.zero()
+        self.v = jank.Vec2d.zero()
 
         if self.controls["up"]:
-            self.velocity.y += PLAYER_SPEED
+            self.v.y += PLAYER_SPEED
         if self.controls["down"]:
-            self.velocity.y -= PLAYER_SPEED
+            self.v.y -= PLAYER_SPEED
         if self.controls["left"]:
-            self.velocity.x -= PLAYER_SPEED
+            self.v.x -= PLAYER_SPEED
         if self.controls["right"]:
-            self.velocity.x += PLAYER_SPEED
+            self.v.x += PLAYER_SPEED
 
-        if self.velocity.length > PLAYER_SPEED:
-            scale = PLAYER_SPEED / self.velocity.length
-            self.velocity = self.velocity * scale
+        if self.v.length > PLAYER_SPEED:
+            scale = PLAYER_SPEED / self.v.length
+            self.v = self.v * scale
 
     def on_fixed_update(self, dt):
         self.update_sprite()
         if self.label is not None:
             self.label.x = self.position.x
             self.label.y = self.position.y + 10
+
+    def delete(self):
+        super().delete()
+        if self.label is not None:
+            self.label.delete()
