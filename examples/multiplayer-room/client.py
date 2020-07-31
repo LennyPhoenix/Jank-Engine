@@ -70,6 +70,8 @@ class Client(jank.networking.Client):
     def player_positions(self, **players):
         if self.player is not None:
             for username, attributes in players.items():
+                if username not in self.players.keys():
+                    continue
                 player = self.players[username]
                 player.position = attributes["position"]
                 player.body.velocity = attributes["velocity"]

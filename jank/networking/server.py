@@ -74,7 +74,7 @@ class Server(Application):
         if network_protocol != self.TCP and network_protocol != self.UDP:
             raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")  # noqa: E501
 
-        for c_socket in self.clients.values():
+        for c_socket in self.clients.copy().values():
             if exclude is None or c_socket not in exclude:
                 try:
                     self.send(
