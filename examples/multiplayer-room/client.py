@@ -8,7 +8,7 @@ import time
 import threading
 
 
-IP = "doaltplusf4.ddns.net"
+IP = "localhost"
 PORT = 25565
 
 

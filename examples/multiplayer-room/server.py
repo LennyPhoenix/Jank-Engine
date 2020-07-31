@@ -2,7 +2,7 @@ import jank
 import source
 
 
-IP = ""
+IP = "localhost"
 PORT = 25565
 
 
