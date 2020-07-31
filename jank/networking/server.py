@@ -12,7 +12,7 @@ class Server(Application):
     UDP: int = 2
 
     _header_size: int = 32
-    _udp_buffer: int = 512
+    _udp_buffer: int = 2048
     _address: str = None
     _port: int = None
     _protocols: t.Dict[str, t.Callable[..., t.Any]] = {}
@@ -178,6 +178,7 @@ class Server(Application):
                 message, c_address = self._socket_udp.recvfrom(
                     self._udp_buffer
                 )
+                print(len(message))
 
                 data = pickle.loads(message)
                 if c_address not in self._udp_addresses.values():
