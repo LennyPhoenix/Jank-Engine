@@ -27,6 +27,7 @@ class Client(jank.networking.Client):
         )
 
         super().__init__(config=config, show_fps=True)
+        self.camera.zoom = 5
         self.players = {}
         self.sprite_queue = []
 
@@ -77,7 +78,6 @@ class Client(jank.networking.Client):
                 player.body.velocity = attributes["velocity"]
 
     def on_update(self, dt):
-        self.position_camera(position=(0, 0), zoom=5)
         if self.name_chosen and self.player is not None:
             self.send(
                 "player_controls", self.player.controls,
