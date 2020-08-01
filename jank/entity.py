@@ -32,6 +32,8 @@ class Entity:
         self.position = position
         self.angle = math.radians(rotation_degrees)
         self.colliders: t.List[pymunk.Shape] = []
+        self.body.position_func = self.position_func
+        self.body.velocity_func = self.velocity_func
 
         if colliders is not None:
             for col in colliders:
@@ -39,18 +41,18 @@ class Entity:
         elif collider is not None:
             self.add_collider(collider)
 
-        jank.get_application().push_handlers(self)
-
     def on_update(self, dt: float):
         """ Called as frequently as possible. Update input/graphics here. """
-        self.update_sprite()
 
     def on_fixed_update(self, dt: float):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
-    def set_friction(self, friction: float):
-        for collider in self.colliders:
-            collider.friction = friction
+    def position_func(self, body: jank.physics.Body, dt: float):
+        jank.physics.Body.update_position(body, dt)
+        self.update_sprite()
+
+    def velocity_func(self, body: jank.physics.Body, gravity: jank.Vec2d, damping: float, dt: float):
+        jank.physics.Body.update_velocity(body, gravity, damping, dt)
 
     @property
     def space(self) -> pymunk.Space:
@@ -72,6 +74,7 @@ class Entity:
     @position.setter
     def position(self, position: pymunk.Vec2d):
         self.body.position = position
+        self.update_sprite()
 
     @property
     def velocity(self) -> pymunk.Vec2d:
@@ -88,6 +91,7 @@ class Entity:
     @angle.setter
     def angle(self, angle: float):
         self.body.angle = angle
+        self.update_sprite()
 
     @property
     def angle_degrees(self) -> float:
@@ -132,6 +136,7 @@ class Entity:
     @scale.setter
     def scale(self, scale: float):
         self.sprite.scale = scale
+        self.update_sprite()
 
     @property
     def scale_x(self) -> float:
@@ -140,6 +145,7 @@ class Entity:
     @scale_x.setter
     def scale_x(self, scale_x: float):
         self.sprite.scale_x = scale_x
+        self.update_sprite()
 
     @property
     def scale_y(self) -> float:
@@ -148,6 +154,7 @@ class Entity:
     @scale_y.setter
     def scale_y(self, scale_y: float):
         self.sprite.scale_y = scale_y
+        self.update_sprite()
 
     @property
     def base_width(self) -> float:

@@ -29,15 +29,10 @@ class Player(jank.Entity):
 
         self.v = jank.Vec2d.zero()
 
-        def velocity_func(body: jank.physics.Body, gravity, damping, dt):
-            body.velocity = self.v
+        jank.get_application().push_handlers(self)
 
-        self.body.velocity_func = velocity_func
-
-        def position_func(body: jank.physics.Body, dt):
-            jank.physics.Body.update_position(body, dt)
-
-        self.body.position_func = position_func
+    def velocity_func(self, body, gravity, damping, dt):
+        body.velocity = self.v
 
     def create_sprite(self):
         image = jank.pyglet.resource.image("resources/player.png")
@@ -81,8 +76,8 @@ class Player(jank.Entity):
             scale = PLAYER_SPEED / self.v.length
             self.v = self.v * scale
 
-    def on_fixed_update(self, dt):
-        self.update_sprite()
+    def update_sprite(self):
+        super().update_sprite()
         if self.label is not None:
             self.label.x = self.position.x
             self.label.y = self.position.y + 10
