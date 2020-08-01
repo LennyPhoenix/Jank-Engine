@@ -25,7 +25,7 @@ class Camera:
     @position.setter
     def position(self, position: t.Tuple[float, float]):
         """Set the scroll offset directly."""
-        self.x, self.y = value
+        self.x, self.y = position
 
     def transform(self, dx: float, dy: float):
         """Move the camera by a given amount."""
