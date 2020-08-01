@@ -261,7 +261,8 @@ class Application(jank.Application):
             position=(0, 0),
             head=True,
             r_arm=True, l_arm=True,
-            r_leg=True, l_leg=True)
+            r_leg=True, l_leg=True
+        )
         self.ragdoll.space = self.physics_space
 
         self.floor = jank.Entity(

@@ -22,6 +22,7 @@ class Application:
     _function_queue_hard: Queue = Queue()
     _function_queue_soft_fixed: Queue = Queue()
     _function_queue_hard_fixed: Queue = Queue()
+    _active_camera: Camera = None
 
     def __init__(
         self,
@@ -65,36 +66,54 @@ class Application:
 
         self.world_batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
-        self.world_camera = Camera(
-            scroll_speed=0,
-            min_zoom=0,
-            max_zoom=float("inf")
-        )
-        self.position_camera()
+        self.camera = Camera()
+        self.camera.set_active()
 
-    def screen_to_world(self, position: t.Tuple[float, float]) -> t.Tuple[float, float]:
+    def screen_to_world(self, position: t.Tuple[int, int]) -> t.Tuple[float, float]:
         """ Convert a screen position to a world position. """
+
+        zoom = self._active_camera.zoom
+        if self._active_camera.auto_adjust:
+            zoom *= min(
+                self.window.width/self.config.default_size[0],
+                self.window.height/self.config.default_size[1]
+            )
+
         x, y = position
 
-        x /= self.world_camera.zoom
-        y /= self.world_camera.zoom
+        x -= self.window.width//2
+        y -= self.window.height//2
 
-        x += self.world_camera.offset_x
-        y += self.world_camera.offset_y
+        x /= zoom
+        y /= zoom
+
+        x += self._active_camera.x
+        y += self._active_camera.y
 
         return (x, y)
 
-    def world_to_screen(self, position: t.Tuple[float, float]) -> t.Tuple[float, float]:
+    def world_to_screen(self, position: t.Tuple[float, float]) -> t.Tuple[int, int]:
         """ Convert a world position to a screen position. """
+
+        zoom = self._active_camera.zoom
+        if self._active_camera.auto_adjust:
+            zoom *= min(
+                self.window.width/self.config.default_size[0],
+                self.window.height/self.config.default_size[1]
+            )
+
         x, y = position
 
-        x -= self.world_camera.offset_x
-        y -= self.world_camera.offset_y
+        x -= self._active_camera.x
+        y -= self._active_camera.y
 
-        x *= self.world_camera.zoom
-        y *= self.world_camera.zoom
+        x *= zoom
+        y *= zoom
 
-        return (x, y)
+        x += self.window.width//2
+        y += self.window.height//2
+
+        return (round(x), round(y))
 
     def push_handlers(self, *handlers):
         for handler in handlers:
@@ -111,49 +130,13 @@ class Application:
 
     def on_draw(self):
         self.window.clear()
-        with self.world_camera:
+        with self._active_camera:
             self.world_batch.draw()
             if self.debug_mode:
                 self.physics_space.debug_draw(self._debug_draw_options)
         self.ui_batch.draw()
         if self.show_fps:
             self.fps_display.draw()
-
-    def position_camera(
-        self,
-        zoom: float = 1,
-        position: t.Tuple[int, int] = (0, 0),
-        min_pos: t.Tuple[int, int] = (None, None),
-        max_pos: t.Tuple[int, int] = (None, None)
-    ):
-        zoom = min(
-            self.window.width/self.config.default_size[0],
-            self.window.height/self.config.default_size[1]
-        ) * zoom
-
-        if self.world_camera.zoom != zoom:
-            self.world_camera.zoom = zoom
-
-        x = -self.window.width//2/zoom
-        y = -self.window.height//2/zoom
-
-        target_x = position[0]
-        target_y = position[1]
-
-        if min_pos[0] is not None:
-            target_x = max(target_x, min_pos[0])
-        if min_pos[1] is not None:
-            target_y = max(target_y, min_pos[1])
-        if max_pos[0] is not None:
-            target_x = min(target_x, max_pos[0])
-        if max_pos[1] is not None:
-            target_y = min(target_y, max_pos[1])
-
-        x += target_x
-        y += target_y
-
-        if self.world_camera.position != (x, y):
-            self.world_camera.position = (x, y)
 
     def create_layers(self, world_layers: t.List[str], ui_layers: t.List[str]):
         self.world_layers = {}
