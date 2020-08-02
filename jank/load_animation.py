@@ -1,9 +1,9 @@
-import pyglet
+import jank
 
 
 def load_animation(image, data):
     max_length = max(a["lenth"] for a in data["animations"].values())
-    sprite_sheet = pyglet.image.ImageGrid(
+    sprite_sheet = jank.pyglet.image.ImageGrid(
         image,
         len(data["animations"]),
         max_length
@@ -19,7 +19,7 @@ def load_animation(image, data):
             )
         animations[
             data["animations"][a]["alias"]
-        ] = pyglet.image.Animation.from_image_sequence(
+        ] = jank.pyglet.image.Animation.from_image_sequence(
             frames,
             frame_length,
             loop=data["animations"][a]["loop"]

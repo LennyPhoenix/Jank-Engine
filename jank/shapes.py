@@ -1,7 +1,7 @@
-import pymunk
-
-from dataclasses import dataclass, field
 import typing as t
+from dataclasses import dataclass, field
+
+import jank
 
 
 @dataclass
@@ -10,7 +10,7 @@ class Base:
     collision_type: int = 0
     elasticity: float = 0.0
     friction: float = 0.0
-    filter: pymunk.ShapeFilter = None
+    filter: jank.physics.ShapeFilter = None
     sensor: bool = False
 
 
@@ -37,12 +37,12 @@ class Segment(Base):
     b: t.Tuple[float, float] = (5, 0)
 
 
-def init_rect(data: Rect) -> pymunk.Poly:
-    transform = pymunk.Transform(
+def init_rect(data: Rect) -> jank.physics.Poly:
+    transform = jank.physics.Transform(
         tx=-data.width/2,
         ty=-data.height/2
     )
-    collider = pymunk.Poly(
+    collider = jank.physics.Poly(
         None,
         vertices=[
             (
@@ -68,8 +68,8 @@ def init_rect(data: Rect) -> pymunk.Poly:
     return collider
 
 
-def init_poly(data) -> pymunk.Poly:
-    collider = pymunk.Poly(
+def init_poly(data) -> jank.physics.Poly:
+    collider = jank.physics.Poly(
         None,
         vertices=data.vertices,
         radius=data.radius
@@ -77,8 +77,8 @@ def init_poly(data) -> pymunk.Poly:
     return collider
 
 
-def init_circle(data) -> pymunk.Circle:
-    collider = pymunk.Circle(
+def init_circle(data) -> jank.physics.Circle:
+    collider = jank.physics.Circle(
         None,
         radius=data.radius,
         offset=data.offset
@@ -86,8 +86,8 @@ def init_circle(data) -> pymunk.Circle:
     return collider
 
 
-def init_segment(data) -> pymunk.Segment:
-    collider = pymunk.Segment(
+def init_segment(data) -> jank.physics.Segment:
+    collider = jank.physics.Segment(
         None,
         a=data.a,
         b=data.b,
@@ -96,7 +96,7 @@ def init_segment(data) -> pymunk.Segment:
     return collider
 
 
-def initialise_shape(shape) -> pymunk.Shape:
+def initialise_shape(shape) -> jank.physics.Shape:
     shapes = {
         Rect: init_rect,
         Poly: init_poly,
@@ -104,7 +104,7 @@ def initialise_shape(shape) -> pymunk.Shape:
         Segment: init_segment
     }
 
-    collider: pymunk.Shape = shapes[type(shape)](shape)
+    collider: jank.physics.Shape = shapes[type(shape)](shape)
 
     collider.collision_type = shape.collision_type
     collider.friction = shape.friction

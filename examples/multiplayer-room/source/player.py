@@ -33,11 +33,11 @@ class Player(jank.Entity):
         body.velocity = self.v
 
     def create_sprite(self):
-        image = jank.pyglet.resource.image("resources/player.png")
-        super().create_sprite(
+        image = jank.resource.image("resources/player.png")
+        self.sprite = jank.Sprite(
             image,
+            0, 0,
             batch=jank.get_application().world_batch,
-            group=jank.get_application().world_layers["player"],
             subpixel=True
         )
         self.label = jank.pyglet.text.Label(

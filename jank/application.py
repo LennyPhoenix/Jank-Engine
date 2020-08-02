@@ -1,16 +1,12 @@
 import typing as t
 from queue import Queue
 
-import pyglet
-import pymunk
+import jank
 import pymunk.pyglet_util
 from pyglet.window import key, mouse
 
 from .camera import Camera
 from .config import Config
-
-pyglet.image.Texture.default_mag_filter = pyglet.gl.GL_NEAREST
-pyglet.image.Texture.default_min_filter = pyglet.gl.GL_NEAREST
 
 _applications = []
 
@@ -33,6 +29,11 @@ class Application:
     ):
         set_application(self)
         self.config = config
+
+        if not self.config.bi_linear_filtering:
+            jank.pyglet.image.Texture.default_mag_filter = jank.pyglet.gl.GL_NEAREST
+            jank.pyglet.image.Texture.default_min_filter = jank.pyglet.gl.GL_NEAREST
+
         self.windowless = windowless
         self.debug_mode = debug_mode
         self.show_fps = show_fps
@@ -44,7 +45,7 @@ class Application:
 
         self.create_layers(self.config.world_layers, self.config.ui_layers)
 
-        self.window = pyglet.window.Window(
+        self.window = jank.pyglet.window.Window(
             width=self.config.default_size[0],
             height=self.config.default_size[1],
             caption=self.config.caption,
@@ -56,7 +57,7 @@ class Application:
         self.window.set_minimum_size(*self.config.minimum_size)
         self.push_handlers(self)
 
-        self.fps_display = pyglet.window.FPSDisplay(window=self.window)
+        self.fps_display = jank.pyglet.window.FPSDisplay(window=self.window)
         if self.config.fps_label is not None:
             self.fps_display.label = self.config.fps_label
 
@@ -64,8 +65,8 @@ class Application:
         self.mouse_handler = mouse.MouseStateHandler()
         self.push_handlers(self.key_handler, self.mouse_handler)
 
-        self.world_batch = pyglet.graphics.Batch()
-        self.ui_batch = pyglet.graphics.Batch()
+        self.world_batch = jank.graphics.Batch()
+        self.ui_batch = jank.graphics.Batch()
         self.camera = Camera()
         self.camera.set_active()
 
@@ -140,17 +141,17 @@ class Application:
 
     def create_layers(self, world_layers: t.List[str], ui_layers: t.List[str]):
         self.world_layers = {}
-        self.world_layers["master"] = pyglet.graphics.Group()
+        self.world_layers["master"] = jank.graphics.Group()
         for layer in world_layers:
-            self.world_layers[layer] = pyglet.graphics.OrderedGroup(
+            self.world_layers[layer] = jank.graphics.OrderedGroup(
                 world_layers.index(layer)+1,
                 parent=self.world_layers["master"]
             )
 
         self.ui_layers = {}
-        self.ui_layers["master"] = pyglet.graphics.Group()
+        self.ui_layers["master"] = jank.graphics.Group()
         for layer in ui_layers:
-            self.ui_layers[layer] = pyglet.graphics.OrderedGroup(
+            self.ui_layers[layer] = jank.graphics.OrderedGroup(
                 ui_layers.index(layer)+1,
                 parent=self.ui_layers["master"]
             )
@@ -206,9 +207,9 @@ class Application:
                 handler.on_fixed_update(dt)
 
     def run(self):
-        pyglet.clock.schedule_interval(self._fixed_update, 1/120)
-        pyglet.clock.schedule(self._update)
-        pyglet.app.run()
+        jank.clock.schedule_interval(self._fixed_update, 1/120)
+        jank.clock.schedule(self._update)
+        jank.app.run()
 
 
 def get_application(index: int = 0) -> Application:

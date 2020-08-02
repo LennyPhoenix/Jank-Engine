@@ -1,20 +1,17 @@
 import math
 import typing as t
 
-import pyglet
-import pymunk
-
 import jank
 
 from . import shapes
 
 
 class Entity:
-    STATIC: int = pymunk.Body.STATIC
-    DYNAMIC: int = pymunk.Body.DYNAMIC
-    KINEMATIC: int = pymunk.Body.KINEMATIC
+    STATIC: int = jank.physics.Body.STATIC
+    DYNAMIC: int = jank.physics.Body.DYNAMIC
+    KINEMATIC: int = jank.physics.Body.KINEMATIC
 
-    _space: pymunk.Space = None
+    _space: jank.physics.Space = None
     _flip_x: bool = False
     _flip_y: bool = False
 
@@ -29,10 +26,10 @@ class Entity:
         colliders: t.List[shapes.Base] = None,
         collider: shapes.Base = None
     ):
-        self.body = pymunk.Body(mass=mass, moment=moment, body_type=body_type)
+        self.body = jank.physics.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation_degrees)
-        self.colliders: t.List[pymunk.Shape] = []
+        self.colliders: t.List[jank.physics.Shape] = []
         self.body.position_func = self.position_func
         self.body.velocity_func = self.velocity_func
 
@@ -66,11 +63,11 @@ class Entity:
         jank.physics.Body.update_velocity(body, gravity, damping, dt)
 
     @property
-    def space(self) -> pymunk.Space:
+    def space(self) -> jank.physics.Space:
         return self._space
 
     @space.setter
-    def space(self, space: pymunk.Space):
+    def space(self, space: jank.physics.Space):
         if self.space is not None:
             self.space.remove(self.body, *self.colliders)
 
@@ -79,20 +76,20 @@ class Entity:
             self.space.add(self.body, *self.colliders)
 
     @property
-    def position(self) -> pymunk.Vec2d:
+    def position(self) -> jank.Vec2d:
         return self.body.position
 
     @position.setter
-    def position(self, position: pymunk.Vec2d):
+    def position(self, position: jank.Vec2d):
         self.body.position = position
         self.update_sprite()
 
     @property
-    def velocity(self) -> pymunk.Vec2d:
+    def velocity(self) -> jank.Vec2d:
         return self.body.velocity
 
     @velocity.setter
-    def velocity(self, velocity: pymunk.Vec2d):
+    def velocity(self, velocity: jank.Vec2d):
         self.body.velocity = velocity
 
     @property
@@ -183,7 +180,7 @@ class Entity:
     def scaled_height(self) -> float:
         return self.base_height * self.scale_y * self.scale
 
-    def add_collider(self, shape: shapes.Base) -> pymunk.Shape:
+    def add_collider(self, shape: shapes.Base) -> jank.physics.Shape:
         col = shapes.initialise_shape(shape)
         col.body = self.body
 
@@ -193,36 +190,6 @@ class Entity:
         self.colliders.append(col)
 
         return col
-
-    def create_sprite(
-        self,
-        image,
-        offset: t.Tuple[float, float] = (0, 0),
-        batch: pyglet.graphics.Batch = None,
-        group: pyglet.graphics.Group = None,
-        subpixel: bool = False,
-        usage: str = "dynamic"
-    ):
-        self.sprite = pyglet.sprite.Sprite(
-            image,
-            x=0, y=0,
-            batch=batch,
-            group=group,
-            subpixel=subpixel,
-            usage=usage
-        )
-        self.sprite_offset = offset
-        self.update_sprite()
-
-    def use_shape_sprite(
-        self,
-        shape_sprite: jank.shape_sprites._ShapeProxy,
-        offset: t.Tuple[float, float] = (0, 0),
-        *args, **kwargs
-    ):
-        self.sprite = shape_sprite(*args, **kwargs)
-        self.sprite_offset = offset
-        self.update_sprite()
 
     def update_sprite(self):
         if hasattr(self, "sprite"):
@@ -234,21 +201,14 @@ class Entity:
             self.sprite.rotation = -self.angle_degrees
 
     @property
-    def sprite(self) -> t.Union[
-        jank.pyglet.sprite.Sprite,
-        jank.shape_sprites._ShapeProxy
-    ]:
+    def sprite(self) -> jank.Sprite:
         return self._sprite
 
     @sprite.setter
-    def sprite(
-        self,
-        sprite: t.Union[
-            jank.pyglet.sprite.Sprite,
-            jank.shape_sprites._ShapeProxy
-        ]
-    ):
+    def sprite(self, sprite: jank.Sprite):
         self._sprite = sprite
+        if hasattr(self.sprite, "push_handlers"):
+            self.sprite.push_handlers(self)
         self.update_sprite()
 
     @property
@@ -257,10 +217,10 @@ class Entity:
 
     def get_grounding_details(self) -> dict:
         grounding = {
-            "normal": pymunk.Vec2d.zero(),
-            "penetration": pymunk.Vec2d.zero(),
-            "impulse": pymunk.Vec2d.zero(),
-            "position": pymunk.Vec2d.zero(),
+            "normal": jank.Vec2d.zero(),
+            "penetration": jank.Vec2d.zero(),
+            "impulse": jank.Vec2d.zero(),
+            "position": jank.Vec2d.zero(),
             "body": None
         }
 
@@ -278,8 +238,14 @@ class Entity:
 
         return grounding
 
+    def draw(self):
+        if hasattr(self, "sprite"):
+            self.sprite.draw()
+
     def delete(self):
         self.space = None
         jank.get_application().remove_handlers(self)
         if hasattr(self, "sprite"):
+            if hasattr(self.sprite, "remove_handlers"):
+                self.sprite.remove_handlers(self)
             self.sprite.delete()
