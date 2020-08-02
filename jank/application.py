@@ -30,7 +30,7 @@ class Application:
         set_application(self)
         self.config = config
 
-        if not self.config.bi_linear_filtering:
+        if not self.config.bilinear_filtering:
             jank.pyglet.image.Texture.default_mag_filter = jank.pyglet.gl.GL_NEAREST
             jank.pyglet.image.Texture.default_min_filter = jank.pyglet.gl.GL_NEAREST
 
@@ -44,14 +44,29 @@ class Application:
             return
 
         self.create_layers(self.config.world_layers, self.config.ui_layers)
+        if config.antialiasing is not None:
+            try:
+                gl_config = jank.pyglet.gl.Config(sample_buffers=1, samples=config.antialiasing)
+                self.window = jank.pyglet.window.Window(
+                    width=self.config.default_size[0],
+                    height=self.config.default_size[1],
+                    caption=self.config.caption,
+                    resizable=self.config.resizable,
+                    vsync=self.config.vsync,
+                    config=gl_config
+                )
+            except jank.pyglet.window.NoSuchConfigException:
+                print("Multisampling not available.")
+                config.antialiasing = None
+        if config.antialiasing is None:
+            self.window = jank.pyglet.window.Window(
+                width=self.config.default_size[0],
+                height=self.config.default_size[1],
+                caption=self.config.caption,
+                resizable=self.config.resizable,
+                vsync=self.config.vsync
+            )
 
-        self.window = jank.pyglet.window.Window(
-            width=self.config.default_size[0],
-            height=self.config.default_size[1],
-            caption=self.config.caption,
-            resizable=self.config.resizable,
-            vsync=self.config.vsync
-        )
         if self.config.icon is not None:
             self.window.set_icon(self.config.icon)
         self.window.set_minimum_size(*self.config.minimum_size)

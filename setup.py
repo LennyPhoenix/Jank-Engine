@@ -21,6 +21,6 @@ setuptools.setup(
     ],
     python_requires='>=3.4',
     install_requires=[
-        "pyglet", "pymunk"
+        "pyglet>=1.5.7", "pymunk"
     ]
 )

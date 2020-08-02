@@ -12,7 +12,8 @@ class Config:
     minimum_size: t.Tuple[int, int] = (100, 100)
     resizable: bool = True
     vsync: bool = True
-    bi_linear_filtering: bool = False
+    bilinear_filtering: bool = False
+    antialiasing: int = None
     fps_label: jank.pyglet.text.Label = None
     world_layers: t.List[str] = field(default_factory=list)
     ui_layers: t.List[str] = field(default_factory=list)
