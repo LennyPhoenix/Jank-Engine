@@ -1,10 +1,3 @@
-# Game Engine
-
-Python game engine using Pyglet and Pymunk.
-
-## Basic Example
-
-```py
 import jank  # Import the engine
 
 
@@ -82,5 +75,3 @@ class Application(jank.Application):
 if __name__ == "__main__":
     application = Application()
     application.run()
-
-```
