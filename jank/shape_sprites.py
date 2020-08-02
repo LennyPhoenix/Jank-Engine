@@ -107,8 +107,8 @@ class Circle(_ShapeProxy):
 
     def _set_anchor(self):
         self._shape.anchor_position = (
-            -self._shape.radius,
-            -self._shape.radius
+            self._shape.radius,
+            self._shape.radius
         )
 
     @property
