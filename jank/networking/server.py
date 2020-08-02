@@ -1,7 +1,6 @@
 import pickle
 import socket
 import threading
-import time
 import typing as t
 
 from jank.application import Application
@@ -61,7 +60,7 @@ class Server(Application):
                     print(
                         f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                     )
-        except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
+        except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
             print(
                 f"Connection from {c_address[0]}:{c_address[1]} was reset."
             )
@@ -70,9 +69,15 @@ class Server(Application):
             del self._udp_addresses[c_socket]
             self.on_disconnection(c_socket)
 
-    def broadcast(self, protocol: str, data: dict = None, exclude: t.List[socket.socket] = None, network_protocol: int = TCP):
+    def broadcast(
+        self,
+        protocol: str,
+        data: dict = None,
+        exclude: t.List[socket.socket] = None,
+        network_protocol: int = TCP
+    ):
         if network_protocol != self.TCP and network_protocol != self.UDP:
-            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")  # noqa: E501
+            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 
         for c_socket in self.clients.copy().values():
             if exclude is None or c_socket not in exclude:
@@ -82,12 +87,18 @@ class Server(Application):
                         protocol, data,
                         network_protocol=network_protocol
                     )
-                except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
+                except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
                     pass
 
-    def send(self, socket: socket.socket, protocol: str, data: dict = None, network_protocol: int = TCP):
+    def send(
+        self,
+        socket: socket.socket,
+        protocol: str,
+        data: dict = None,
+        network_protocol: int = TCP
+    ):
         if network_protocol != self.TCP and network_protocol != self.UDP:
-            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")  # noqa: E501
+            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 
         if data is None:
             data = {}

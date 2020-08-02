@@ -1,6 +1,3 @@
-import pymunk
-import pyglet
-
 import jank
 import source
 

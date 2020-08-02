@@ -1,5 +1,3 @@
-import random
-
 import jank
 from jank import key
 

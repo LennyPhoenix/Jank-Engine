@@ -1,5 +1,4 @@
 import math
-import pickle
 import typing as t
 
 import pyglet
@@ -18,6 +17,8 @@ class Entity:
     _space: pymunk.Space = None
     _flip_x: bool = False
     _flip_y: bool = False
+
+    sprite_offset = jank.Vec2d.zero()
 
     def __init__(
         self,
@@ -47,11 +48,21 @@ class Entity:
     def on_fixed_update(self, dt: float):
         """ Called 120 times a second at a fixed rate. Update physics here. """
 
-    def position_func(self, body: jank.physics.Body, dt: float):
+    def position_func(
+        self,
+        body: jank.physics.Body,
+        dt: float
+    ):
         jank.physics.Body.update_position(body, dt)
         self.update_sprite()
 
-    def velocity_func(self, body: jank.physics.Body, gravity: jank.Vec2d, damping: float, dt: float):
+    def velocity_func(
+        self,
+        body: jank.physics.Body,
+        gravity: jank.Vec2d,
+        damping: float,
+        dt: float
+    ):
         jank.physics.Body.update_velocity(body, gravity, damping, dt)
 
     @property
@@ -192,7 +203,6 @@ class Entity:
         subpixel: bool = False,
         usage: str = "dynamic"
     ):
-        self.sprite_offset = offset
         self.sprite = pyglet.sprite.Sprite(
             image,
             x=0, y=0,
@@ -201,6 +211,17 @@ class Entity:
             subpixel=subpixel,
             usage=usage
         )
+        self.sprite_offset = offset
+        self.update_sprite()
+
+    def use_shape_sprite(
+        self,
+        shape_sprite: jank.shape_sprites._ShapeProxy,
+        offset: t.Tuple[float, float] = (0, 0),
+        *args, **kwargs
+    ):
+        self.sprite = shape_sprite(*args, **kwargs)
+        self.sprite_offset = offset
         self.update_sprite()
 
     def update_sprite(self):
@@ -211,6 +232,24 @@ class Entity:
             pos = self.position+pos.rotated(self.angle)
             self.sprite.position = tuple(pos)
             self.sprite.rotation = -self.angle_degrees
+
+    @property
+    def sprite(self) -> t.Union[
+        jank.pyglet.sprite.Sprite,
+        jank.shape_sprites._ShapeProxy
+    ]:
+        return self._sprite
+
+    @sprite.setter
+    def sprite(
+        self,
+        sprite: t.Union[
+            jank.pyglet.sprite.Sprite,
+            jank.shape_sprites._ShapeProxy
+        ]
+    ):
+        self._sprite = sprite
+        self.update_sprite()
 
     @property
     def grounded(self) -> bool:

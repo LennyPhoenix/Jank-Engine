@@ -1,7 +1,6 @@
 import pickle
 import socket
 import threading
-import time
 import typing as t
 
 from jank.application import Application
@@ -35,7 +34,7 @@ class Client(Application):
 
     def send(self, protocol: str, data: dict = None, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
-            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")  # noqa: E501
+            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 
         if data is None:
             data = {}
@@ -116,7 +115,7 @@ class Client(Application):
 
     def _socket_thread(self, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
-            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")  # noqa: E501
+            raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 
         try:
             if network_protocol == self.TCP:
@@ -143,7 +142,7 @@ class Client(Application):
                     data = pickle.loads(message)
                     if c_address != self._socket_tcp.getpeername():
                         print(
-                            f"Recieved message from unconnected user (not the connected server): {c_address}"
+                            f"Received message from unconnected user (not the connected server): {c_address}"  # noqa: E501
                         )
                     elif data["protocol"] in self._protocols.keys():
                         self._protocols[data["protocol"]](**data["data"])
@@ -151,7 +150,7 @@ class Client(Application):
                         print(
                             f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                         )
-        except (ConnectionAbortedError, ConnectionResetError, TimeoutError) as e:
+        except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
             if self.connected:
                 print("Disconnected.")
                 self.connected = False
