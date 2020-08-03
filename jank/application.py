@@ -12,6 +12,7 @@ _applications = []
 
 
 class Application:
+    id: int
     _debug_draw_options: pymunk.SpaceDebugDrawOptions = pymunk.pyglet_util.DrawOptions()
     _handlers: t.List[t.Any] = []
     _function_queue_soft: Queue = Queue()
@@ -83,6 +84,7 @@ class Application:
         self.world_batch = jank.graphics.Batch()
         self.ui_batch = jank.graphics.Batch()
         self.camera = Camera()
+        self.camera.application_id = self.id
         self.camera.set_active()
 
     def screen_to_world(self, position: t.Tuple[int, int]) -> t.Tuple[float, float]:
@@ -236,3 +238,4 @@ def get_application(index: int = 0) -> Application:
 
 def set_application(application: Application):
     _applications.append(application)
+    application.id = _applications.index(application)

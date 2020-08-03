@@ -21,7 +21,6 @@ class Application(jank.Application):
 
         # Create controls dictionary
         self.controls = {
-            "up": False,
             "left": False,
             "right": False
         }
@@ -54,12 +53,6 @@ class Application(jank.Application):
         for _ in range(self.PHYSICS_STEPS):
             self.physics_space.step(dt/self.PHYSICS_STEPS)
 
-        # Jump if the W key is pressed and the player is grounded.
-        if self.controls["up"] and self.player.grounded:
-            self.player.body.apply_impulse_at_local_point(
-                (0, self.PLAYER_JUMP)
-            )
-
         # Set the player's X velocity.
         vx = 0
         if self.controls["left"]:
@@ -68,11 +61,17 @@ class Application(jank.Application):
             vx += self.PLAYER_SPEED
         self.player.velocity = (vx, self.player.velocity.y)
 
+    # Jump when the W key is pressed and the player is grounded.
+    def on_key_press(self, button, modifiers):
+        if button == jank.key.W and self.player.grounded:
+            self.player.body.apply_impulse_at_local_point(
+                (0, self.PLAYER_JUMP)
+            )
+
     # Called as frequently as possible.
     def on_update(self, dt: float):
         # Update controls dict
         self.controls = {
-            "up": self.key_handler[jank.key.W],
             "left": self.key_handler[jank.key.A],
             "right": self.key_handler[jank.key.D]
         }
