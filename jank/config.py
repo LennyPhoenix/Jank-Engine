@@ -7,7 +7,7 @@ import jank
 @dataclass
 class Config:
     caption: str = None
-    icon: jank.pyglet.image.ImageData = None
+    icon: jank.pyglet.image.AbstractImage = None
     default_size: t.Tuple[int, int] = (1000, 800)
     minimum_size: t.Tuple[int, int] = (100, 100)
     resizable: bool = True
