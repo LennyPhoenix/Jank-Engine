@@ -254,7 +254,7 @@ class Entity:
 
     def delete(self):
         self.space = None
-        jank.get_application().remove_handlers(self)
+        jank.get_app().remove_handlers(self)
         if hasattr(self, "sprite"):
             if hasattr(self.sprite, "remove_handlers"):
                 self.sprite.remove_handlers(self)

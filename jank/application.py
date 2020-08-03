@@ -8,11 +8,8 @@ from pyglet.window import key, mouse
 from .camera import Camera
 from .config import Config
 
-_applications = []
-
 
 class Application:
-    id: int
     _debug_draw_options: pymunk.SpaceDebugDrawOptions = pymunk.pyglet_util.DrawOptions()
     _handlers: t.List[t.Any] = []
     _function_queue_soft: Queue = Queue()
@@ -28,7 +25,7 @@ class Application:
         debug_mode: bool = False,
         show_fps: bool = False
     ):
-        set_application(self)
+        set_app(self)
         self.config = config
 
         if not self.config.bilinear_filtering:
@@ -84,7 +81,6 @@ class Application:
         self.world_batch = jank.graphics.Batch()
         self.ui_batch = jank.graphics.Batch()
         self.camera = Camera()
-        self.camera.application_id = self.id
         self.camera.set_active()
 
     def screen_to_world(self, position: t.Tuple[int, int]) -> t.Tuple[float, float]:
@@ -226,16 +222,16 @@ class Application:
     def run(self):
         jank.clock.schedule_interval(self._fixed_update, 1/120)
         jank.clock.schedule(self._update)
-        jank.app.run()
+        jank.pyglet.app.run()
 
 
-def get_application(index: int = 0) -> Application:
-    try:
-        return _applications[index]
-    except IndexError:
-        return None
+class Globals:
+    app: Application
 
 
-def set_application(application: Application):
-    _applications.append(application)
-    application.id = _applications.index(application)
+def get_app() -> Application:
+    return Globals.app
+
+
+def set_app(app: Application):
+    Globals.app = app

@@ -5,7 +5,6 @@ import jank
 
 class Camera:
     """A simple 2D camera that contains the speed and offset."""
-    application_id = 0
 
     def __init__(
         self,
@@ -29,11 +28,11 @@ class Camera:
 
     @property
     def bounding_box(self) -> jank.BoundingBox:
-        window = jank.get_application(self.application_id).window
+        window = jank.get_app().window
 
         zoom = self.zoom
         if self.auto_adjust:
-            config = jank.get_application(self.application_id).config
+            config = jank.get_app().config
             zoom *= min(
                 window.width/config.default_size[0],
                 window.height/config.default_size[1]
@@ -57,11 +56,11 @@ class Camera:
 
     def begin(self):
         """Set the current camera offset so you can draw your scene."""
-        window = jank.get_application(self.application_id).window
+        window = jank.get_app().window
 
         zoom = self.zoom
         if self.auto_adjust:
-            config = jank.get_application(self.application_id).config
+            config = jank.get_app().config
             zoom *= min(
                 window.width/config.default_size[0],
                 window.height/config.default_size[1]
@@ -84,11 +83,11 @@ class Camera:
         """Since this is a matrix, you will need to reverse the translate after rendering otherwise
         it will multiply the current offset every draw update pushing it further and further away.
         """
-        window = jank.get_application(self.application_id).window
+        window = jank.get_app().window
 
         zoom = self.zoom
         if self.auto_adjust:
-            config = jank.get_application(self.application_id).config
+            config = jank.get_app().config
             zoom *= min(
                 window.width/config.default_size[0],
                 window.height/config.default_size[1]
@@ -108,7 +107,7 @@ class Camera:
         )
 
     def set_active(self):
-        jank.get_application(self.application_id)._active_camera = self
+        jank.get_app()._active_camera = self
 
     def __enter__(self):
         self.begin()

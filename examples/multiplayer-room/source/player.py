@@ -23,11 +23,11 @@ class Player(jank.Entity):
                 height=16
             )
         )
-        self.space = jank.get_application().physics_space
+        self.space = jank.get_app().physics_space
 
         self.v = jank.Vec2d.zero()
 
-        jank.get_application().push_handlers(self)
+        jank.get_app().push_handlers(self)
 
     def velocity_func(self, body, gravity, damping, dt):
         body.velocity = self.v
@@ -37,20 +37,20 @@ class Player(jank.Entity):
         self.sprite = jank.Sprite(
             image,
             0, 0,
-            batch=jank.get_application().world_batch,
+            batch=jank.get_app().world_batch,
             subpixel=True
         )
         self.label = jank.pyglet.text.Label(
             text=self.player_id,
             font_size=8,
             anchor_x="center",
-            batch=jank.get_application().world_batch,
-            group=jank.get_application().world_layers["name_tags"]
+            batch=jank.get_app().world_batch,
+            group=jank.get_app().world_layers["name_tags"]
         )
 
     def on_update(self, dt):
         if self.controlling:
-            key_handler = jank.get_application().key_handler
+            key_handler = jank.get_app().key_handler
 
             self.controls = {
                 "up": key_handler[key.W],

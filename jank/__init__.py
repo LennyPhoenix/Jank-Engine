@@ -1,6 +1,6 @@
 import pyglet
 import pymunk as physics
-from pyglet import app, clock, graphics, resource
+from pyglet import clock, graphics, resource
 from pyglet import shapes as shape_sprites
 from pyglet.sprite import Sprite
 from pyglet.window import key, mouse
@@ -8,7 +8,7 @@ from pymunk import BB as BoundingBox
 from pymunk import Vec2d
 
 from . import networking, shapes
-from .application import Application, get_application
+from .application import Application, get_app, set_app
 from .camera import Camera
 from .config import Config
 from .entity import Entity
@@ -18,7 +18,7 @@ from .state_machine import StateMachine
 __all__ = [
     "pyglet",
     "physics",
-    "app", "clock", "graphics", "resource",
+    "clock", "graphics", "resource",
     "shape_sprites",
     "Sprite",
     "key", "mouse",
@@ -26,7 +26,7 @@ __all__ = [
     "Vec2d",
 
     "networking", "shapes",
-    "Application", "get_application",
+    "Application", "get_app", "set_app",
     "Camera",
     "Config",
     "Entity",
