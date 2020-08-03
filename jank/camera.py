@@ -27,6 +27,29 @@ class Camera:
         """Set the scroll offset directly."""
         self.x, self.y = position
 
+    @property
+    def bounding_box(self) -> jank.BoundingBox:
+        window = jank.get_application(self.application_id).window
+
+        zoom = self.zoom
+        if self.auto_adjust:
+            config = jank.get_application(self.application_id).config
+            zoom *= min(
+                window.width/config.default_size[0],
+                window.height/config.default_size[1]
+            )
+
+        x = -window.width//2/zoom + self.x
+        y = -window.height//2/zoom + self.y
+
+        width = window.width/zoom
+        height = window.height/zoom
+
+        return jank.BoundingBox(
+            x, y,
+            width+x, height+y
+        )
+
     def transform(self, dx: float, dy: float):
         """Move the camera by a given amount."""
         self.x += dx

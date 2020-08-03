@@ -15,6 +15,7 @@ class Entity:
     _flip_x: bool = False
     _flip_y: bool = False
 
+    colliders: t.List[jank.physics.Shape]
     sprite_offset = jank.Vec2d.zero()
 
     def __init__(
@@ -26,10 +27,10 @@ class Entity:
         colliders: t.List[shapes.Base] = None,
         collider: shapes.Base = None
     ):
+        self.colliders = []
         self.body = jank.physics.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation_degrees)
-        self.colliders: t.List[jank.physics.Shape] = []
         self.body.position_func = self.position_func
         self.body.velocity_func = self.velocity_func
 
@@ -72,7 +73,7 @@ class Entity:
             self.space.remove(self.body, *self.colliders)
 
         self._space = space
-        if space is not None:
+        if self.space is not None:
             self.space.add(self.body, *self.colliders)
 
     @property
@@ -237,6 +238,15 @@ class Entity:
         self.body.each_arbiter(f)
 
         return grounding
+
+    @property
+    def bounding_box(self) -> jank.BoundingBox:
+        return jank.BoundingBox(
+            min(shape.bb.left for shape in self.colliders),
+            min(shape.bb.bottom for shape in self.colliders),
+            max(shape.bb.right for shape in self.colliders),
+            max(shape.bb.top for shape in self.colliders)
+        )
 
     def draw(self):
         if hasattr(self, "sprite"):

@@ -4,6 +4,7 @@ from pyglet import app, clock, graphics, resource
 from pyglet import shapes as shape_sprites
 from pyglet.sprite import Sprite
 from pyglet.window import key, mouse
+from pymunk import BB as BoundingBox
 from pymunk import Vec2d
 
 from . import networking, shapes
@@ -21,6 +22,7 @@ __all__ = [
     "shape_sprites",
     "Sprite",
     "key", "mouse",
+    "BoundingBox",
     "Vec2d",
 
     "networking", "shapes",
