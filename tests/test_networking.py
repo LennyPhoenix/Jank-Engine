@@ -104,7 +104,7 @@ class TestNetworkingTCP(unittest.TestCase):
         client2.connect("localhost", 5555, False)
         client3.connect("localhost", 5555, False)
 
-        server.broadcast("say", {"message": "Received."})
+        server.broadcast("say", {"message": "Received."}, network_protocol=server.TCP)
 
 
 class TestNetworkingUDP(unittest.TestCase):
