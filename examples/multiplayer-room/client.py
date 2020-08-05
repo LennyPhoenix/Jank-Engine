@@ -94,10 +94,6 @@ class Client(jank.networking.Client):
     def on_key_press(self, key, modifiers):
         if key == jank.key.GRAVE:
             self.debug_mode = not self.debug_mode
-        if key == jank.key.ENTER:
-            self.disconnect()
-        if key == jank.key.BACKSPACE:
-            self.send("dc")
 
     def on_connection(self, socket):
         def name_loop():
