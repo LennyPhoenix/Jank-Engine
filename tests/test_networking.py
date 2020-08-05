@@ -189,4 +189,4 @@ class TestNetworkingUDP(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    TestNetworkingTCP.test_ping_pong(TestNetworkingTCP)
+    unittest.main()
