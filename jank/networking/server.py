@@ -31,6 +31,8 @@ class Server(Application):
 
         self._protocols[name] = func
 
+        return func
+
     def on_connection(self, socket: socket.socket):
         """ Called on new connection. """
 

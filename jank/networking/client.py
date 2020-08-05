@@ -26,6 +26,8 @@ class Client(Application):
 
         self._protocols[name] = func
 
+        return func
+
     def on_connection(self, socket):
         """ Called on successfull connection. """
 
