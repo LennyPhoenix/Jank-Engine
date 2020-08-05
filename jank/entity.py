@@ -63,18 +63,18 @@ class Entity:
     ):
         jank.physics.Body.update_velocity(body, gravity, damping, dt)
 
-    @property
-    def space(self) -> jank.physics.Space:
+    def get_space(self) -> jank.physics.Space:
         return self._space
 
-    @space.setter
-    def space(self, space: jank.physics.Space):
+    def set_space(self, space: jank.physics.Space):
         if self.space is not None:
             self.space.remove(self.body, *self.colliders)
 
         self._space = space
         if self.space is not None:
             self.space.add(self.body, *self.colliders)
+
+    space = property(get_space, set_space)
 
     @property
     def position(self) -> jank.Vec2d:
