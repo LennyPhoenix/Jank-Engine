@@ -1,8 +1,10 @@
+import typing as t
+
 import pyglet
 
 
 class StateMachine(pyglet.event.EventDispatcher):
-    _state = None
+    _state: t.Any = None
 
     @property
     def state(self):

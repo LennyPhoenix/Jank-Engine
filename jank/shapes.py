@@ -10,7 +10,7 @@ class Base:
     collision_type: int = 0
     elasticity: float = 0.0
     friction: float = 0.0
-    filter: jank.physics.ShapeFilter = None
+    filter: t.Optional[jank.physics.ShapeFilter] = None
     sensor: bool = False
 
 

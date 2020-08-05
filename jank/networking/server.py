@@ -12,8 +12,8 @@ class Server(Application):
 
     _header_size: int = 32
     _udp_buffer: int = 2048
-    _address: str = None
-    _port: int = None
+    _address: t.Optional[str] = None
+    _port: t.Optional[int] = None
     _protocols: t.Dict[str, t.Callable[..., t.Any]] = {}
     _udp_addresses: t.Dict[socket.socket, t.Tuple[str, int]] = {}
 
@@ -25,7 +25,7 @@ class Server(Application):
         self.register_protocol(self._assign_udp_port)
         super().__init__(*args, **kwargs)
 
-    def register_protocol(self, func: t.Callable[..., t.Any], name: str = None):
+    def register_protocol(self, func: t.Callable[..., t.Any], name: t.Optional[str] = None):
         if name is None:
             name = func.__name__
 
@@ -80,8 +80,8 @@ Client socket closed, aborting:
     def broadcast(
         self,
         protocol: str,
-        data: dict = None,
-        exclude: t.List[socket.socket] = None,
+        data: t.Optional[dict] = None,
+        exclude: t.Optional[t.List[socket.socket]] = None,
         network_protocol: int = TCP
     ):
         if network_protocol != self.TCP and network_protocol != self.UDP:
@@ -102,7 +102,7 @@ Client socket closed, aborting:
         self,
         socket: socket.socket,
         protocol: str,
-        data: dict = None,
+        data: t.Optional[dict] = None,
         network_protocol: int = TCP
     ):
         if network_protocol != self.TCP and network_protocol != self.UDP:

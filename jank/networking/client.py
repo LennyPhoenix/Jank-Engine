@@ -13,14 +13,14 @@ class Client(Application):
 
     _header_size: int = 32
     _udp_buffer: int = 2048
-    _address: str = None
-    _port: int = None
+    _address: t.Optional[str] = None
+    _port: t.Optional[int] = None
     _protocols: t.Dict[str, t.Callable[..., t.Any]] = {}
 
     connected: bool = False
     udp_enabled: bool = False
 
-    def register_protocol(self, func: t.Callable[..., t.Any], name: str = None):
+    def register_protocol(self, func: t.Callable[..., t.Any], name: t.Optional[str] = None):
         if name is None:
             name = func.__name__
 
@@ -34,7 +34,7 @@ class Client(Application):
     def on_disconnection(self, socket):
         """ Called on disconnection. """
 
-    def send(self, protocol: str, data: dict = None, network_protocol: int = TCP):
+    def send(self, protocol: str, data: t.Optional[dict] = None, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
             raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 

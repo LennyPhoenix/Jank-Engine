@@ -11,7 +11,7 @@ class Entity:
     DYNAMIC: int = jank.physics.Body.DYNAMIC
     KINEMATIC: int = jank.physics.Body.KINEMATIC
 
-    _space: jank.physics.Space = None
+    _space: t.Optional[jank.physics.Space] = None
     _flip_x: bool = False
     _flip_y: bool = False
 
@@ -24,8 +24,9 @@ class Entity:
         rotation_degrees: float = 0,
         body_type: int = DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
-        colliders: t.List[shapes.Base] = None,
-        collider: shapes.Base = None
+        colliders: t.Optional[t.List[shapes.Base]] = None,
+        collider: t.Optional[shapes.Base] = None,
+        space: t.Optional[jank.physics.Space] = None
     ):
         self.colliders = []
         self.body = jank.physics.Body(mass=mass, moment=moment, body_type=body_type)
@@ -39,6 +40,9 @@ class Entity:
                 self.add_collider(col)
         elif collider is not None:
             self.add_collider(collider)
+
+        if space is not None:
+            self.space = space
 
     def on_update(self, dt: float):
         """ Called as frequently as possible. Update input/graphics here. """

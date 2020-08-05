@@ -10,13 +10,13 @@ from .config import Config
 
 
 class Application:
+    _handlers: t.List[t.Any]
+    _active_camera: t.Optional[Camera]
     _debug_draw_options: pymunk.SpaceDebugDrawOptions = pymunk.pyglet_util.DrawOptions()
-    _handlers: t.List[t.Any] = []
     _function_queue_soft: Queue = Queue()
     _function_queue_hard: Queue = Queue()
     _function_queue_soft_fixed: Queue = Queue()
     _function_queue_hard_fixed: Queue = Queue()
-    _active_camera: Camera = None
 
     def __init__(
         self,
@@ -25,6 +25,8 @@ class Application:
         debug_mode: bool = False,
         show_fps: bool = False
     ):
+        self._handlers = []
+
         set_app(self)
         self.config = config
 
