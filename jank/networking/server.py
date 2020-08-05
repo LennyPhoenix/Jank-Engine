@@ -59,9 +59,7 @@ class Server(Application):
                         c_socket, **data["data"]
                     )
                 else:
-                    print(
-                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
-                    )
+                    print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
         except ConnectionResetError as e:
             print(f"Connection from {c_address[0]}:{c_address[1]} was reset:\n    {e}")
             del self.clients[c_address]
@@ -71,7 +69,11 @@ class Server(Application):
             self.on_disconnection(c_socket)
         except OSError as e:
             if e.errno == 10038:
-                print(f"Client socket closed, aborting:\n    {e}")
+                print(f"""
+Client socket closed, aborting:
+    {e}
+
+""")
             else:
                 print(e)
 
@@ -195,12 +197,25 @@ class Server(Application):
                     c_thread.start()
             except OSError as e:
                 if e.errno == 10038:
-                    print(f"Main socket closed, aborting:\n    {e}")
+                    print(f"""
+Main socket closed, aborting:
+    {e}
+
+""")
                 else:
                     print(e)
         else:
             while True:
-                message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+                try:
+                    message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+                except ConnectionResetError as e:
+                    print(f"""
+Failed to send packet to client:
+    {e}
+    Make sure that UDP is enabled on the server.
+
+""")
+                    continue
 
                 if not self.connected:
                     print("No longer connected. Ending UDP thread.")
@@ -208,9 +223,7 @@ class Server(Application):
 
                 data = pickle.loads(message)
                 if c_address not in self._udp_addresses.values():
-                    print(
-                        f"Recieved message from unconnected user: {c_address}"
-                    )
+                    print(f"Recieved message from unconnected user: {c_address}")
                 elif data["protocol"] in self._protocols.keys():
                     socket_list = list(self._udp_addresses.keys())
                     address_list = list(self._udp_addresses.values())

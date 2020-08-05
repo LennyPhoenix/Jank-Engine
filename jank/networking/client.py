@@ -122,28 +122,33 @@ class Client(Application):
                     if data["protocol"] in self._protocols.keys():
                         self._protocols[data["protocol"]](**data["data"])
                     else:
-                        print(
-                            f"Recieved invalid/unregistered protocol type: {data['protocol']}"
-                        )
+                        print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
             except ConnectionResetError as e:
                 print(f"Connection to server was reset:\n    {e}")
                 self.disconnect()
             except ConnectionAbortedError as e:
-                print(f"Connection to the server was aborted:\n    {e}")
+                print(f"""
+Connection to the server was aborted:
+    {e}
+
+""")
         else:
             while True:
-                message, c_address = self._socket_udp.recvfrom(
-                    self._udp_buffer
-                )
+                try:
+                    message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+                except ConnectionResetError as e:
+                    print(f"""
+Failed to send packet to client:
+    {e}
+    Make sure that UDP is enabled on the server.
+
+""")
+                    continue
 
                 data = pickle.loads(message)
                 if c_address != self._socket_tcp.getpeername():
-                    print(
-                        f"Received message from unconnected user (not the connected server): {c_address}"  # noqa: E501
-                    )
+                    print(f"Received message from unconnected user: {c_address}")
                 elif data["protocol"] in self._protocols.keys():
                     self._protocols[data["protocol"]](**data["data"])
                 else:
-                    print(
-                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
-                    )
+                    print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
