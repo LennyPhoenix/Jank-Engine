@@ -5,6 +5,8 @@ PLAYER_SPEED = 100
 
 
 class Player(jank.Entity):
+    v = jank.Vec2d.zero()
+
     def __init__(self, player_id: str):
         self.controlling = False
         self.controls = {
@@ -24,8 +26,6 @@ class Player(jank.Entity):
             )
         )
         self.space = jank.get_app().physics_space
-
-        self.v = jank.Vec2d.zero()
 
         jank.get_app().push_handlers(self)
 

@@ -15,6 +15,7 @@ class Server(jank.networking.Server):
 
         self.register_protocol(self.choose_username)
         self.register_protocol(self.player_controls)
+        self.register_protocol(self.dc)
 
     def player_controls(self, socket, **controls):
         username = self.usernames[socket]
@@ -42,6 +43,9 @@ class Server(jank.networking.Server):
                 for username, player in self.players.items()
             }
         )
+
+    def dc(self, socket):
+        self.disconnect()
 
     def on_disconnection(self, socket):
         if socket in self.usernames.keys():

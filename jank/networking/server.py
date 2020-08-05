@@ -60,14 +60,18 @@ class Server(Application):
                     print(
                         f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                     )
-        except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
-            print(
-                f"Connection from {c_address[0]}:{c_address[1]} was reset."
-            )
-            c_socket.close()
+        except ConnectionResetError as e:
+            print(f"Connection from {c_address[0]}:{c_address[1]} was reset:\n    {e}")
             del self.clients[c_address]
-            del self._udp_addresses[c_socket]
+            if c_socket in self._udp_addresses.keys():
+                del self._udp_addresses[c_socket]
+            c_socket.close()
             self.on_disconnection(c_socket)
+        except OSError as e:
+            if e.errno == 10038:
+                print(f"Client socket closed, aborting:\n    {e}")
+            else:
+                print(e)
 
     def broadcast(
         self,
@@ -87,8 +91,8 @@ class Server(Application):
                         protocol, data,
                         network_protocol=network_protocol
                     )
-                except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
-                    pass
+                except ConnectionResetError:
+                    continue
 
     def send(
         self,
@@ -112,9 +116,7 @@ class Server(Application):
             socket.sendall(header + message)
         else:
             if socket not in self._udp_addresses.keys():
-                print(
-                    "Cannot send packet to user as UDP port has not yet been assigned."
-                )
+                print("Cannot send packet to user as UDP port has not yet been assigned.")
                 return
             address = self._udp_addresses[socket]
             self._socket_udp.sendto(message, address)
@@ -158,14 +160,18 @@ class Server(Application):
             socket_thread_udp.start()
 
     def disconnect(self):
-        # TODO: Make this more elegant.
-        self._socket_tcp.close()
-        del self._socket_tcp
-        if self.udp_enabled:
-            del self._socket_udp
-
         self.connected = False
         self.udp_enabled = False
+
+        self._socket_tcp.close()
+        if self.udp_enabled:
+            self._socket_udp.close()
+
+        for client_socket in self.clients.values():
+            client_socket.close()
+
+        self.clients = {}
+        self._udp_addresses = {}
 
     def _socket_thread(self, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
@@ -175,20 +181,28 @@ class Server(Application):
             self._socket_tcp.listen()
             print(f"Listening on {self._address}:{self._port}.")
 
-            while True:
-                c_socket, c_address = self._socket_tcp.accept()
+            try:
+                while True:
+                    c_socket, c_address = self._socket_tcp.accept()
 
-                c_thread = threading.Thread(
-                    target=self.threaded_client_tcp,
-                    args=(c_socket, c_address),
-                    daemon=True
-                )
-                c_thread.start()
+                    c_thread = threading.Thread(
+                        target=self.threaded_client_tcp,
+                        args=(c_socket, c_address),
+                        daemon=True
+                    )
+                    c_thread.start()
+            except OSError as e:
+                if e.errno == 10038:
+                    print(f"Main socket closed, aborting:\n    {e}")
+                else:
+                    print(e)
         else:
             while True:
-                message, c_address = self._socket_udp.recvfrom(
-                    self._udp_buffer
-                )
+                message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+
+                if not self.connected:
+                    print("No longer connected. Ending UDP thread.")
+                    break
 
                 data = pickle.loads(message)
                 if c_address not in self._udp_addresses.values():
@@ -203,9 +217,7 @@ class Server(Application):
                         socket, **data["data"]
                     )
                 else:
-                    print(
-                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
-                    )
+                    print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
 
     def _assign_udp_port(self, socket: socket.socket, port: int):
         address_list = list(self.clients.keys())

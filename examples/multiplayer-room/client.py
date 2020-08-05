@@ -42,12 +42,13 @@ class Client(jank.networking.Client):
         print("Username Taken")
 
     def add_player(self, name):
-        player = source.Player(name)
-        self.players[name] = player
-        self.sprite_queue.append(player)
+        if self.name_chosen:
+            player = source.Player(name)
+            self.players[name] = player
+            self.sprite_queue.append(player)
 
     def remove_player(self, name):
-        if name in self.players.keys():
+        if self.name_chosen and name in self.players.keys():
             self.players[name].delete()
             del self.players[name]
 
@@ -75,7 +76,7 @@ class Client(jank.networking.Client):
                 player.body.velocity = attributes["velocity"]
 
     def on_update(self, dt):
-        if self.name_chosen and self.player is not None:
+        if self.name_chosen and self.player is not None and self.connected:
             self.send(
                 "player_controls", self.player.controls,
                 network_protocol=self.UDP
@@ -93,6 +94,10 @@ class Client(jank.networking.Client):
     def on_key_press(self, key, modifiers):
         if key == jank.key.GRAVE:
             self.debug_mode = not self.debug_mode
+        if key == jank.key.ENTER:
+            self.disconnect()
+        if key == jank.key.BACKSPACE:
+            self.send("dc")
 
     def on_connection(self, socket):
         def name_loop():

@@ -65,12 +65,7 @@ class Client(Application):
         self._socket_tcp = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM
         )
-        while True:
-            try:
-                self._socket_tcp.connect((self._address, self._port))
-                break
-            except TimeoutError:
-                print("Server did not respond, retrying.")
+        self._socket_tcp.connect((self._address, self._port))
 
         socket_thread_tcp = threading.Thread(
             target=self._socket_thread,
@@ -85,10 +80,6 @@ class Client(Application):
             self._socket_udp.bind(("0.0.0.0", 0))
             _, port = self._socket_udp.getsockname()
             self.send("_assign_udp_port", {"port": port})
-            self.send(
-                "_assign_udp_port", {"port": port},
-                network_protocol=self.UDP
-            )
 
             socket_thread_udp = threading.Thread(
                 target=self._socket_thread,
@@ -103,22 +94,21 @@ class Client(Application):
         self.on_connection(self._socket_tcp)
 
     def disconnect(self):
-        # TODO: Make this more elegant.
-        self._socket_tcp.close()
-        del self._socket_tcp
-        if self.udp_enabled:
-            self._socket_udp.close()
-            del self._socket_udp
-
         self.connected = False
         self.udp_enabled = False
+
+        self._socket_tcp.close()
+        if self.udp_enabled:
+            self._socket_udp.close()
+
+        self.on_disconnection(self._socket_tcp)
 
     def _socket_thread(self, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
             raise TypeError("Invalid network_protocol type. Must be TCP or UDP.")
 
-        try:
-            if network_protocol == self.TCP:
+        if network_protocol == self.TCP:
+            try:
                 while True:
                     header_bytes = self.recv_bytes_tcp(self._header_size)
                     header = header_bytes.decode("utf-8")
@@ -133,26 +123,25 @@ class Client(Application):
                         print(
                             f"Recieved invalid/unregistered protocol type: {data['protocol']}"
                         )
-            else:
-                while True:
-                    message, c_address = self._socket_udp.recvfrom(
-                        self._udp_buffer
-                    )
+            except ConnectionResetError as e:
+                print(f"Connection to server was reset:\n    {e}")
+                self.disconnect()
+            except ConnectionAbortedError as e:
+                print(f"Connection to the server was aborted:\n    {e}")
+        else:
+            while True:
+                message, c_address = self._socket_udp.recvfrom(
+                    self._udp_buffer
+                )
 
-                    data = pickle.loads(message)
-                    if c_address != self._socket_tcp.getpeername():
-                        print(
-                            f"Received message from unconnected user (not the connected server): {c_address}"  # noqa: E501
-                        )
-                    elif data["protocol"] in self._protocols.keys():
-                        self._protocols[data["protocol"]](**data["data"])
-                    else:
-                        print(
-                            f"Recieved invalid/unregistered protocol type: {data['protocol']}"
-                        )
-        except (ConnectionAbortedError, ConnectionResetError, TimeoutError):
-            if self.connected:
-                print("Disconnected.")
-                self.connected = False
-                self.udp_enabled = False
-                self.on_disconnection(self._socket_tcp)
+                data = pickle.loads(message)
+                if c_address != self._socket_tcp.getpeername():
+                    print(
+                        f"Received message from unconnected user (not the connected server): {c_address}"  # noqa: E501
+                    )
+                elif data["protocol"] in self._protocols.keys():
+                    self._protocols[data["protocol"]](**data["data"])
+                else:
+                    print(
+                        f"Recieved invalid/unregistered protocol type: {data['protocol']}"
+                    )
