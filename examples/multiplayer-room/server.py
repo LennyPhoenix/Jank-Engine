@@ -6,15 +6,18 @@ IP = "localhost"
 PORT = 25565
 
 
-class Server(jank.networking.Server):
+class Server(jank.Application):
 
     def __init__(self):
         super().__init__(windowless=True)
         self.players = {}
         self.usernames = {}
 
-        self.register_protocol(self.choose_username)
-        self.register_protocol(self.player_controls)
+        self.server = jank.networking.Server()
+        self.server.push_handlers(self)
+
+        self.server.register_protocol(self.choose_username)
+        self.server.register_protocol(self.player_controls)
 
     def player_controls(self, socket, **controls):
         username = self.usernames[socket]
@@ -24,15 +27,15 @@ class Server(jank.networking.Server):
 
     def choose_username(self, socket, username: str):
         if username in self.players.keys():
-            self.send(
+            self.server.send(
                 socket, "username_taken"
             )
             return
 
         self.usernames[socket] = username
         self.players[username] = source.Player(username)
-        self.broadcast("add_player", {"name": username}, exclude=[socket])
-        self.send(
+        self.server.broadcast("add_player", {"name": username}, exclude=[socket])
+        self.server.send(
             socket, "player_list",
             {
                 username: {
@@ -52,7 +55,7 @@ class Server(jank.networking.Server):
                 self.players[username].delete()
                 del self.players[username]
 
-            self.broadcast(
+            self.server.broadcast(
                 "remove_player", {"name": username}
             )
 
@@ -66,14 +69,14 @@ class Server(jank.networking.Server):
             }
             for username, player in self.players.items()
         }
-        self.broadcast(
+        self.server.broadcast(
             "player_positions",
             positions,
-            network_protocol=self.UDP
+            network_protocol=self.server.UDP
         )
 
     def run(self):
-        self.connect(
+        self.server.connect(
             address=IP,
             port=PORT,
             enable_udp=True

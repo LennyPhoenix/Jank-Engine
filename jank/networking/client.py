@@ -3,22 +3,21 @@ import socket
 import threading
 import typing as t
 
-from jank.application import Application
+import jank
 
 
-class Client(Application):
-
+class Client(jank.pyglet.event.EventDispatcher):
     TCP: int = 1
     UDP: int = 2
 
     _header_size: int = 32
-    _udp_buffer: int = 2048
     _address: t.Optional[str] = None
     _port: t.Optional[int] = None
     _protocols: t.Dict[str, t.Callable[..., t.Any]] = {}
 
     connected: bool = False
     udp_enabled: bool = False
+    udp_buffer: int = 2048
 
     def register_protocol(self, func: t.Callable[..., t.Any], name: t.Optional[str] = None):
         if name is None:
@@ -93,7 +92,7 @@ class Client(Application):
         self.connected = True
         self.udp_enabled = enable_udp
 
-        self.on_connection(self._socket_tcp)
+        self.dispatch_event("on_connection", self._socket_tcp)
 
     def disconnect(self):
         self.connected = False
@@ -103,7 +102,7 @@ class Client(Application):
         if self.udp_enabled:
             self._socket_udp.close()
 
-        self.on_disconnection(self._socket_tcp)
+        self.dispatch_event("on_disconnection", self._socket_tcp)
 
     def _socket_thread(self, network_protocol: int = TCP):
         if network_protocol != self.TCP and network_protocol != self.UDP:
@@ -135,7 +134,7 @@ Connection to the server was aborted:
         else:
             while True:
                 try:
-                    message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+                    message, c_address = self._socket_udp.recvfrom(self.udp_buffer)
                 except ConnectionResetError as e:
                     print(f"""
 Failed to send packet to client:
@@ -152,3 +151,7 @@ Failed to send packet to client:
                     self._protocols[data["protocol"]](**data["data"])
                 else:
                     print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
+
+
+Client.register_event_type("on_connection")
+Client.register_event_type("on_disconnection")

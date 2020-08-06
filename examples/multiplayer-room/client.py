@@ -9,7 +9,7 @@ IP = "localhost"
 PORT = 25565
 
 
-class Client(jank.networking.Client):
+class Client(jank.Application):
     def __init__(self):
         config = jank.Config(
             caption="Jank Engine, Multiplayer Example",
@@ -26,17 +26,19 @@ class Client(jank.networking.Client):
         super().__init__(config=config, show_fps=True)
         self.camera.zoom = 5
         self.players = {}
-        self.sprite_queue = []
 
         self.name_chosen = False
         self.username = None
         self.player = None
 
-        self.register_protocol(self.username_taken)
-        self.register_protocol(self.add_player)
-        self.register_protocol(self.remove_player)
-        self.register_protocol(self.player_list)
-        self.register_protocol(self.player_positions)
+        self.client = jank.networking.Client()
+        self.client.push_handlers(self)
+
+        self.client.register_protocol(self.username_taken)
+        self.client.register_protocol(self.add_player)
+        self.client.register_protocol(self.remove_player)
+        self.client.register_protocol(self.player_list)
+        self.client.register_protocol(self.player_positions)
 
     def username_taken(self):
         print("Username Taken")
@@ -45,7 +47,7 @@ class Client(jank.networking.Client):
         if self.name_chosen:
             player = source.Player(name)
             self.players[name] = player
-            self.sprite_queue.append(player)
+            self.queue_soft(player.create_sprite, False)
 
     def remove_player(self, name):
         if self.name_chosen and name in self.players.keys():
@@ -57,7 +59,7 @@ class Client(jank.networking.Client):
         for username, attributes in players.items():
             player = source.Player(username)
 
-            self.sprite_queue.append(player)
+            self.queue_soft(player.create_sprite, False)
 
             self.players[username] = player
             player.position = attributes["position"]
@@ -76,16 +78,11 @@ class Client(jank.networking.Client):
                 player.body.velocity = attributes["velocity"]
 
     def on_update(self, dt):
-        if self.name_chosen and self.player is not None and self.connected:
-            self.send(
+        if self.name_chosen and self.player is not None and self.client.connected:
+            self.client.send(
                 "player_controls", self.player.controls,
-                network_protocol=self.UDP
+                network_protocol=self.client.UDP
             )
-
-        if len(self.sprite_queue) > 0:
-            sprite = self.sprite_queue[0]
-            sprite.create_sprite()
-            self.sprite_queue.remove(sprite)
 
     def on_fixed_update(self, dt):
         for _ in range(5):
@@ -100,7 +97,7 @@ class Client(jank.networking.Client):
             while not self.name_chosen:
                 name = input("Choose Username: ")
                 self.username = name
-                self.send("choose_username", {"username": name})
+                self.client.send("choose_username", {"username": name})
                 time.sleep(3)
 
         _name_loop = threading.Thread(
@@ -110,7 +107,7 @@ class Client(jank.networking.Client):
         _name_loop.start()
 
     def run(self):
-        self.connect(
+        self.client.connect(
             address=IP,
             port=PORT,
             enable_udp=True

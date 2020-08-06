@@ -3,15 +3,14 @@ import socket
 import threading
 import typing as t
 
-from jank.application import Application
+import jank
 
 
-class Server(Application):
+class Server(jank.pyglet.event.EventDispatcher):
     TCP: int = 1
     UDP: int = 2
 
     _header_size: int = 32
-    _udp_buffer: int = 2048
     _address: t.Optional[str] = None
     _port: t.Optional[int] = None
     _protocols: t.Dict[str, t.Callable[..., t.Any]] = {}
@@ -20,10 +19,10 @@ class Server(Application):
     clients: t.Dict[t.Tuple[str, int], socket.socket] = {}
     connected: bool = False
     udp_enabled: bool = False
+    udp_buffer: int = 2048
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.register_protocol(self._assign_udp_port)
-        super().__init__(*args, **kwargs)
 
     def register_protocol(self, func: t.Callable[..., t.Any], name: t.Optional[str] = None):
         if name is None:
@@ -43,7 +42,7 @@ class Server(Application):
         print(f"Accepted new connection from {c_address[0]}:{c_address[1]}.")
         self.clients[c_address] = c_socket
 
-        self.on_connection(c_socket)
+        self.dispatch_event("on_connection", c_socket)
 
         try:
             while True:
@@ -66,7 +65,7 @@ class Server(Application):
             if c_socket in self._udp_addresses.keys():
                 del self._udp_addresses[c_socket]
             c_socket.close()
-            self.on_disconnection(c_socket)
+            self.dispatch_event("on_disconnection", c_socket)
         except OSError as e:
             if e.errno == 10038:
                 print(f"""
@@ -207,7 +206,7 @@ Main socket closed, aborting:
         else:
             while True:
                 try:
-                    message, c_address = self._socket_udp.recvfrom(self._udp_buffer)
+                    message, c_address = self._socket_udp.recvfrom(self.udp_buffer)
                 except ConnectionResetError as e:
                     print(f"""
 Failed to send packet to client:
@@ -242,3 +241,7 @@ Failed to send packet to client:
             port
         )
         self._udp_addresses[socket] = address
+
+
+Server.register_event_type("on_connection")
+Server.register_event_type("on_disconnection")
