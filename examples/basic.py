@@ -1,18 +1,3 @@
-# Game Engine
-
-Python game engine using Pyglet and Pymunk.
-
-## Installation
-
-Install with pip:
-
-```cmd
-python -m pip install -U git+https://github.com/DoAltPlusF4/Jank-Engine.git
-```
-
-## Basic Example
-
-```py
 import jank  # Import the engine
 
 
@@ -89,5 +74,3 @@ class Application(jank.Application):
 if __name__ == "__main__":
     application = Application()
     application.run()
-
-```
