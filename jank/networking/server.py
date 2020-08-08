@@ -60,7 +60,11 @@ class Server(jank.pyglet.event.EventDispatcher):
                 else:
                     print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
         except ConnectionResetError as e:
-            print(f"Connection from {c_address[0]}:{c_address[1]} was reset:\n    {e}")
+            print(f"""
+Connection from {c_address[0]}:{c_address[1]} was reset:
+    {e}
+
+""")
             del self.clients[c_address]
             if c_socket in self._udp_addresses.keys():
                 del self._udp_addresses[c_socket]

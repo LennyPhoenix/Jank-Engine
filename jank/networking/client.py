@@ -123,7 +123,11 @@ class Client(jank.pyglet.event.EventDispatcher):
                     else:
                         print(f"Recieved invalid/unregistered protocol type: {data['protocol']}")
             except ConnectionResetError as e:
-                print(f"Connection to server was reset:\n    {e}")
+                print(f"""
+Connection to server was reset:
+    {e}
+
+""")
                 self.disconnect()
             except ConnectionAbortedError as e:
                 print(f"""
