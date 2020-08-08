@@ -1,9 +1,9 @@
-import pickle
 import socket
 import threading
 import typing as t
 
 import jank
+from . import encoders
 
 
 class Server(jank.pyglet.event.EventDispatcher):
@@ -20,6 +20,7 @@ class Server(jank.pyglet.event.EventDispatcher):
     connected: bool = False
     udp_enabled: bool = False
     udp_buffer: int = 2048
+    encoder: encoders.Encoder = encoders.JsonEncoder
 
     def __init__(self):
         self.register_protocol(self._assign_udp_port)
@@ -52,7 +53,7 @@ class Server(jank.pyglet.event.EventDispatcher):
 
                 message = self.recv_bytes_tcp(c_socket, length)
 
-                data = pickle.loads(message)
+                data = self.encoder.decode(message)
                 if data["protocol"] in self._protocols.keys():
                     self._protocols[data["protocol"]](
                         c_socket, **data["data"]
@@ -113,7 +114,7 @@ Client socket closed, aborting:
 
         if data is None:
             data = {}
-        message = pickle.dumps({
+        message = self.encoder.encode({
             "protocol": protocol,
             "data": data
         })
@@ -224,7 +225,7 @@ Failed to send packet to client:
                     print("No longer connected. Ending UDP thread.")
                     break
 
-                data = pickle.loads(message)
+                data = self.encoder.decode(message)
                 if c_address not in self._udp_addresses.values():
                     print(f"Recieved message from unconnected user: {c_address}")
                 elif data["protocol"] in self._protocols.keys():

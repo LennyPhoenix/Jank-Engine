@@ -1,9 +1,9 @@
-import pickle
 import socket
 import threading
 import typing as t
 
 import jank
+from . import encoders
 
 
 class Client(jank.pyglet.event.EventDispatcher):
@@ -18,6 +18,7 @@ class Client(jank.pyglet.event.EventDispatcher):
     connected: bool = False
     udp_enabled: bool = False
     udp_buffer: int = 2048
+    encoder: encoders.Encoder = encoders.JsonEncoder
 
     def register_protocol(self, func: t.Callable[..., t.Any], name: t.Optional[str] = None):
         if name is None:
@@ -39,7 +40,7 @@ class Client(jank.pyglet.event.EventDispatcher):
 
         if data is None:
             data = {}
-        message = pickle.dumps({
+        message = self.encoder.encode({
             "protocol": protocol,
             "data": data
         })
@@ -117,7 +118,7 @@ class Client(jank.pyglet.event.EventDispatcher):
 
                     message = self.recv_bytes_tcp(length)
 
-                    data = pickle.loads(message)
+                    data = self.encoder.decode(message)
                     if data["protocol"] in self._protocols.keys():
                         self._protocols[data["protocol"]](**data["data"])
                     else:
@@ -148,7 +149,7 @@ Failed to send packet to client:
 """)
                     continue
 
-                data = pickle.loads(message)
+                data = self.encoder.decode(message)
                 if c_address != self._socket_tcp.getpeername():
                     print(f"Received message from unconnected user: {c_address}")
                 elif data["protocol"] in self._protocols.keys():
