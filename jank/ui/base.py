@@ -2,14 +2,14 @@ import typing as t
 
 import jank
 
-from .constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
+from .constants import BOTTOM, LEFT
 
 
 class UIBase:
-    _anchor_x: str = LEFT
-    _anchor_y: str = BOTTOM
-    _parent_anchor_x: str = LEFT
-    _parent_anchor_y: str = BOTTOM
+    _anchor_x: float = LEFT
+    _anchor_y: float = BOTTOM
+    _parent_anchor_x: float = LEFT
+    _parent_anchor_y: float = BOTTOM
     _parent: t.Any = None
 
     children: t.List[t.Any]
@@ -92,86 +92,68 @@ class UIBase:
         self.update_position()
 
     @property
-    def anchor_x(self) -> str:
+    def anchor_x(self) -> float:
         return self._anchor_x
 
     @anchor_x.setter
-    def anchor_x(self, anchor_x: str):
-        if anchor_x not in [jank.ui.LEFT, jank.ui.CENTER, jank.ui.RIGHT]:
-            raise TypeError("anchor_x must be one of ui.LEFT, ui.CENTER, or ui.RIGHT.")
+    def anchor_x(self, anchor_x: float):
         self._anchor_x = anchor_x
+        self.update_position()
 
     @property
-    def anchor_y(self) -> str:
+    def anchor_y(self) -> float:
         return self._anchor_y
 
     @anchor_y.setter
-    def anchor_y(self, anchor_y: str):
-        if anchor_y not in [jank.ui.BOTTOM, jank.ui.CENTER, jank.ui.TOP]:
-            raise TypeError("anchor_y must be one of ui.BOTTOM, ui.CENTER, or ui.TOP.")
+    def anchor_y(self, anchor_y: float):
         self._anchor_y = anchor_y
+        self.update_position()
 
     @property
-    def parent_anchor_x(self) -> str:
+    def parent_anchor_x(self) -> float:
         return self._parent_anchor_x
 
     @parent_anchor_x.setter
-    def parent_anchor_x(self, parent_anchor_x: str):
-        if parent_anchor_x not in [LEFT, CENTER, RIGHT]:
-            raise TypeError("parent_anchor_x must be one of ui.LEFT, ui.CENTER, or ui.RIGHT.")
+    def parent_anchor_x(self, parent_anchor_x: float):
         self._parent_anchor_x = parent_anchor_x
+        self.update_position()
 
     @property
-    def parent_anchor_y(self) -> str:
+    def parent_anchor_y(self) -> float:
         return self._parent_anchor_y
 
     @parent_anchor_y.setter
-    def parent_anchor_y(self, parent_anchor_y: str):
-        if parent_anchor_y not in [BOTTOM, CENTER, TOP]:
-            raise TypeError("parent_anchor_y must be one of ui.BOTTOM, ui.CENTER, or ui.TOP.")
+    def parent_anchor_y(self, parent_anchor_y: float):
         self._parent_anchor_y = parent_anchor_y
+        self.update_position()
 
     @property
     def real_x(self) -> float:
         real_x = self.x
-        if not isinstance(self.parent, jank.pyglet.window.Window):
+        if self.parent is not None:
             real_x += self.parent.real_x
+            parent = self.parent
+        else:
+            parent = jank.get_app().window
 
-        adjustments = {
-            LEFT: lambda x: x,
-            CENTER: lambda x: x-self.width/2,
-            RIGHT: lambda x: x-self.width,
-        }
-        real_x = adjustments[self.anchor_x](real_x)
+        real_x -= self.width*self.anchor_x
 
-        parent_adjustments = {
-            LEFT: lambda x: x,
-            CENTER: lambda x: x+self.parent.width/2,
-            RIGHT: lambda x: x+self.parent.width,
-        }
-        real_x = parent_adjustments[self.anchor_x](real_x)
+        real_x += parent.width*self.parent_anchor_x
 
         return real_x
 
     @property
     def real_y(self) -> float:
         real_y = self.y
-        if not isinstance(self.parent, jank.pyglet.window.Window):
+        if self.parent is not None:
             real_y += self.parent.real_y
+            parent = self.parent
+        else:
+            parent = jank.get_app().window
 
-        adjustments = {
-            LEFT: lambda x: x,
-            CENTER: lambda x: x-self.height/2,
-            RIGHT: lambda x: x-self.height,
-        }
-        real_y = adjustments[self.anchor_x](real_y)
+        real_y -= self.height*self.anchor_y
 
-        parent_adjustments = {
-            LEFT: lambda x: x,
-            CENTER: lambda x: x+self.parent.height/2,
-            RIGHT: lambda x: x+self.parent.height,
-        }
-        real_y = parent_adjustments[self.anchor_x](real_y)
+        real_y += parent.height*self.parent_anchor_y
 
         return real_y
 
@@ -181,10 +163,9 @@ class UIBase:
 
     @parent.setter
     def parent(self, parent: t.Any):
-        if parent is None:
-            parent = jank.get_app().window
         self._parent = parent
-        self.parent.children.append(self)
+        if self.parent is not None:
+            self.parent.children.append(self)
         self.update_position()
 
     @property
