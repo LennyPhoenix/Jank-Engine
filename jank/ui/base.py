@@ -17,6 +17,7 @@ class UIBase:
     def __init__(self, parent: t.Any = None):
         self.children = []
         self.parent = parent
+        jank.get_app().push_handlers(self)
 
     def update_sprite(self):
         pass
@@ -193,3 +194,7 @@ class UIBase:
     def check_hit_real(self, real_x, real_y):
         bb = self.bounding_box_real
         return bb.left <= real_x < bb.right and bb.bottom <= real_y < bb.top
+
+    def on_resize(self, width, height):
+        if self.parent is None:
+            self.update_position()
