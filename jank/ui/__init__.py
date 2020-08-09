@@ -1,7 +1,7 @@
-from .base import UIBase
+from .base import Base
 from .constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
 
 __all__ = [
-    "UIBase",
+    "Base",
     "BOTTOM", "CENTER", "LEFT", "RIGHT", "TOP"
 ]

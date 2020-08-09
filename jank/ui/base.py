@@ -5,7 +5,7 @@ import jank
 from .constants import BOTTOM, LEFT
 
 
-class UIBase:
+class Base:
     _anchor_x: float = LEFT
     _anchor_y: float = BOTTOM
     _parent_anchor_x: float = LEFT
