@@ -78,7 +78,13 @@ class Entity:
         if self.space is not None:
             self.space.add(self.body, *self.colliders)
 
-    space = property(get_space, set_space)
+    @property
+    def space(self) -> jank.physics.Space:
+        return self.get_space()
+
+    @space.setter
+    def space(self, space: jank.physics.Space):
+        self.set_space(space)
 
     @property
     def position(self) -> jank.Vec2d:
