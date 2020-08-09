@@ -27,7 +27,7 @@ class Application:
     ):
         self._handlers = []
 
-        set_app(self)
+        jank.set_app(self)
         self.config = config
 
         if not self.config.bilinear_filtering:
@@ -225,15 +225,3 @@ class Application:
         jank.clock.schedule_interval(self._fixed_update, 1/120)
         jank.clock.schedule(self._update)
         jank.pyglet.app.run()
-
-
-class Globals:
-    app: Application
-
-
-def get_app() -> Application:
-    return Globals.app
-
-
-def set_app(app: Application):
-    Globals.app = app

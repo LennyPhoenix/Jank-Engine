@@ -8,10 +8,11 @@ from pymunk import BB as BoundingBox
 from pymunk import Vec2d
 
 from . import networking, shapes
-from .application import Application, get_app, set_app
+from .application import Application
 from .camera import Camera
 from .config import Config
 from .entity import Entity
+from .globals import Globals, get_app, set_app
 from .load_animation import load_animation
 from .state_machine import StateMachine
 
@@ -26,10 +27,11 @@ __all__ = [
     "Vec2d",
 
     "networking", "shapes",
-    "Application", "get_app", "set_app",
+    "Application",
     "Camera",
     "Config",
     "Entity",
+    "Globals", "get_app", "set_app",
     "load_animation",
     "StateMachine"
 ]
