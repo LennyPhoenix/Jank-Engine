@@ -1,4 +1,4 @@
-# Game Engine
+# Jank Engine
 
 Python game engine using Pyglet and Pymunk.
 
@@ -9,6 +9,10 @@ Install with pip:
 ```cmd
 python -m pip install -U git+https://github.com/DoAltPlusF4/Jank-Engine.git
 ```
+
+## Trello Roadmap
+
+[Jank on Trello](https://trello.com/b/HUz84vfw/jank)
 
 ## Basic Example
 
