@@ -14,9 +14,9 @@ class Sprite(Base):
         image: jank.pyglet.image.AbstractImage,
         x: float, y: float,
         subpixel: bool = True,
-        parent: t.Any = None,
-        batch: jank.graphics.Batch = None,
-        group: jank.graphics.Group = None
+        parent: t.Optional[Base] = None,
+        batch: t.Optional[jank.graphics.Batch] = None,
+        group: t.Optional[jank.graphics.Group] = None
     ):
         self._x = x
         self._y = y

@@ -16,9 +16,9 @@ class Circle(Base):
         segments: int = None,
         colour: t.Tuple[int, int, int] = (255, 255, 255),
         opacity: int = 255,
-        parent: t.Any = None,
-        batch: jank.graphics.Batch = None,
-        group: jank.graphics.Group = None
+        parent: t.Optional[Base] = None,
+        batch: t.Optional[jank.graphics.Batch] = None,
+        group: t.Optional[jank.graphics.Group] = None
     ):
         self._x = x
         self._y = y
