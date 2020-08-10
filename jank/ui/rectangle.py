@@ -59,3 +59,11 @@ class Rect(Base):
 
     def set_height(self, height: float):
         self.rect.height = height
+
+    @property
+    def visible(self) -> bool:
+        return self.rect.visible
+
+    @visible.setter
+    def visible(self, visible: bool):
+        self.rect.visible = visible

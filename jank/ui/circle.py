@@ -61,3 +61,11 @@ class Circle(Base):
     @radius.setter
     def radius(self, radius: float):
         self.circle.radius = radius
+
+    @property
+    def visible(self) -> bool:
+        return self.circle.visible
+
+    @visible.setter
+    def visible(self, visible: bool):
+        self.circle.visible = visible

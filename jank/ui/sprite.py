@@ -76,3 +76,11 @@ class Sprite(Base):
     def scale_y(self, scale_y: float):
         self.sprite.scale_y = scale_y
         self.update_position()
+
+    @property
+    def visible(self) -> bool:
+        return self.sprite.visible
+
+    @visible.setter
+    def visible(self, visible: bool):
+        self.sprite.visible = visible
