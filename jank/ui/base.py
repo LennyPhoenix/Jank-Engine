@@ -164,6 +164,8 @@ class Base:
 
     @parent.setter
     def parent(self, parent: t.Any):
+        if self.parent is not None:
+            self.parent.children.remove(self)
         self._parent = parent
         if self.parent is not None:
             self.parent.children.append(self)
