@@ -5,5 +5,5 @@ from .server import Server
 __all__ = [
     "encoders",
     "Client",
-    "Server"
+    "Server",
 ]

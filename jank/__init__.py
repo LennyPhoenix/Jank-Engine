@@ -31,5 +31,5 @@ __all__ = [
     "Config",
     "Entity",
     "load_animation",
-    "StateMachine"
+    "StateMachine",
 ]
