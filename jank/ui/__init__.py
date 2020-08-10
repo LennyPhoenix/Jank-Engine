@@ -3,6 +3,7 @@ from .circle import Circle
 from .constants import BOTTOM, CENTER, LEFT, RIGHT, TOP
 from .rectangle import Rect
 from .sprite import Sprite
+from .text import Text
 
 __all__ = [
     "Base",
@@ -10,4 +11,5 @@ __all__ = [
     "BOTTOM", "CENTER", "LEFT", "RIGHT", "TOP",
     "Rect",
     "Sprite",
+    "Text",
 ]
