@@ -56,3 +56,11 @@ class Circle(Base):
 
     def set_height(self, height):
         pass
+
+    @property
+    def radius(self) -> float:
+        return self.circle.radius
+
+    @radius.setter
+    def radius(self, radius: float):
+        self.circle.radius = radius
