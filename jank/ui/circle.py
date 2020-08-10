@@ -36,6 +36,9 @@ class Circle(Base):
         self.circle.x = self.real_x+self.width/2
         self.circle.y = self.real_y+self.height/2
 
+    def delete_sprite(self):
+        self.circle.delete()
+
     def get_x(self) -> float:
         return self._x
 

@@ -36,6 +36,9 @@ class Rect(Base):
         self.rect.x = self.real_x
         self.rect.y = self.real_y
 
+    def delete_sprite(self):
+        self.rect.delete()
+
     def get_x(self) -> float:
         return self._x
 

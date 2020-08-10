@@ -32,6 +32,9 @@ class Sprite(Base):
     def update_sprite(self):
         self.sprite.position = (self.real_x, self.real_y)
 
+    def delete_sprite(self):
+        self.sprite.delete()
+
     def get_x(self):
         return self._x
 

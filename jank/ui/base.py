@@ -22,6 +22,9 @@ class Base:
     def update_sprite(self):
         pass
 
+    def delete_sprite(self):
+        pass
+
     def update_position(self):
         self.update_sprite()
         for child in self.children:
@@ -31,6 +34,17 @@ class Base:
         child._parent = self
         self.children.append(child)
         child.update_position()
+
+    def delete(self, recursive: bool = True):
+        parent = self.parent
+        self.parent = None
+        for child in self.children:
+            if recursive:
+                child.delete(True)
+            else:
+                child.parent = parent
+        jank.get_app().remove_handlers(self)
+        self.delete_sprite()
 
     def get_x(self) -> float:
         return 0.
