@@ -1,0 +1,5 @@
+BOTTOM = 0
+CENTER = 0.5
+LEFT = 0
+RIGHT = 1
+TOP = 1
