@@ -7,14 +7,26 @@ class Rect(Base):
     _x: float
     _y: float
 
-    def __init__(self, x, y, width, height, colour, parent=None):
+    def __init__(
+        self,
+        x, y,
+        width, height,
+        colour=(255, 255, 255),
+        opacity=255,
+        parent=None,
+        batch=None, group=None
+    ):
         self._x = x
         self._y = y
         self.rect = jank.shape_sprites.Rectangle(
-            x, y, width, height,
-            color=colour,
-            batch=jank.get_app().ui_batch
+            x, y,
+            width,
+            height,
+            colour,
+            batch,
+            group
         )
+        self.rect.opacity = opacity
         super().__init__(parent)
 
     def update_sprite(self):
