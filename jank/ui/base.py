@@ -172,27 +172,27 @@ class Base:
     @property
     def bounding_box(self) -> jank.BoundingBox:
         return jank.BoundingBox(
-            self.x,
-            self.y,
-            self.x+self.width,
-            self.y+self.width
-        )
-
-    def check_hit(self, x, y):
-        bb = self.bounding_box
-        return bb.left <= x < bb.right and bb.bottom <= y < bb.top
-
-    @property
-    def bounding_box_real(self) -> jank.BoundingBox:
-        return jank.BoundingBox(
             self.real_x,
             self.real_y,
             self.real_x+self.width,
             self.real_y+self.width
         )
 
-    def check_hit_real(self, real_x, real_y):
-        bb = self.bounding_box_real
+    @property
+    def full_bounding_box(self) -> jank.BoundingBox:
+        all_bounding_boxes = [
+            child.full_bounding_box for child in self.children
+        ]
+        all_bounding_boxes.append(self.bounding_box)
+        return jank.BoundingBox(
+            min(bounding_box.left for bounding_box in all_bounding_boxes),
+            min(bounding_box.bottom for bounding_box in all_bounding_boxes),
+            max(bounding_box.right for bounding_box in all_bounding_boxes),
+            max(bounding_box.top for bounding_box in all_bounding_boxes)
+        )
+
+    def check_hit(self, real_x, real_y):
+        bb = self.bounding_box
         return bb.left <= real_x < bb.right and bb.bottom <= real_y < bb.top
 
     def on_resize(self, width, height):
