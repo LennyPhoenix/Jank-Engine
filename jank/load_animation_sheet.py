@@ -2,7 +2,7 @@ import jank
 
 
 def load_animation_sheet(image: jank.pyglet.image.AbstractImage, data: dict):
-    max_length = max(a["lenth"] for a in data["animations"].values())
+    max_length = max(a["lenth"] for a in data["animations"])
     sprite_sheet = jank.pyglet.image.ImageGrid(
         image,
         len(data["animations"]),
