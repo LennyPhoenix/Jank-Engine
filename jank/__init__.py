@@ -13,7 +13,7 @@ from .camera import Camera
 from .config import Config
 from .entity import Entity
 from .globals import Globals, get_app, set_app
-from .load_animation import load_animation
+from .load_animation_sheet import load_animation_sheet
 from .state_machine import StateMachine
 
 __all__ = [
@@ -32,6 +32,6 @@ __all__ = [
     "Config",
     "Entity",
     "Globals", "get_app", "set_app",
-    "load_animation",
+    "load_animation_sheet",
     "StateMachine",
 ]
