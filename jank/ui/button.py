@@ -36,6 +36,12 @@ class Button(Base, jank.pyglet.event.EventDispatcher):
         self.pressed = False
         super().__init__(parent)
 
+    def on_press(self):
+        """ Called on button press. """
+
+    def on_release(self):
+        """ Called on button release. """
+
     def update_sprite(self):
         self.sprite.position = (self.real_x, self.real_y)
 
@@ -131,6 +137,7 @@ class Button(Base, jank.pyglet.event.EventDispatcher):
         else:
             self.sprite.image = self._out_img
         self.pressed = False
+        self.dispatch_event("on_release")
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self.pressed or not self.active:
@@ -142,6 +149,7 @@ class Button(Base, jank.pyglet.event.EventDispatcher):
 
 
 Button.register_event_type("on_press")
+Button.register_event_type("on_release")
 
 
 class ToggleButton(Button):
