@@ -7,7 +7,7 @@ from pyglet.window import key, mouse
 from pymunk import BB as BoundingBox
 from pymunk import Vec2d
 
-from . import networking, shapes, ui
+from . import networking, renderer, shapes, ui
 from .application import Application
 from .camera import Camera
 from .config import Config
@@ -26,7 +26,7 @@ __all__ = [
     "BoundingBox",
     "Vec2d",
 
-    "networking", "shapes", "ui",
+    "networking", "renderer", "shapes", "ui",
     "Application",
     "Camera",
     "Config",

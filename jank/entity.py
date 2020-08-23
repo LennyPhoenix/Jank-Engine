@@ -12,15 +12,14 @@ class Entity:
     KINEMATIC: int = jank.physics.Body.KINEMATIC
 
     _space: t.Optional[jank.physics.Space] = None
-    _flip_x: bool = False
-    _flip_y: bool = False
+    _renderer: t.Optional[jank.renderer.Renderer] = None
 
     colliders: t.List[jank.physics.Shape]
-    sprite_offset = jank.Vec2d.zero()
+    body: jank.physics.Body
 
     def __init__(
         self,
-        position: t.Tuple[float, float] = (0, 0),
+        position: t.Union[jank.Vec2d, t.Tuple[float, float]] = jank.Vec2d(0, 0),
         rotation_degrees: float = 0,
         body_type: int = DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
@@ -32,7 +31,7 @@ class Entity:
         self.body = jank.physics.Body(mass=mass, moment=moment, body_type=body_type)
         self.position = position
         self.angle = math.radians(rotation_degrees)
-        self.body.position_func = self.position_func
+        self.body.position_func = self._position_func
         self.body.velocity_func = self.velocity_func
 
         if colliders is not None:
@@ -56,7 +55,14 @@ class Entity:
         dt: float
     ):
         jank.physics.Body.update_position(body, dt)
-        self.update_sprite()
+
+    def _position_func(
+        self,
+        body: jank.physics.Body,
+        dt: float
+    ):
+        self.position_func(body, dt)
+        self.update_renderer()
 
     def velocity_func(
         self,
@@ -91,16 +97,16 @@ class Entity:
         return self.body.position
 
     @position.setter
-    def position(self, position: jank.Vec2d):
+    def position(self, position: t.Union[jank.Vec2d, t.Tuple[float, float]]):
         self.body.position = position
-        self.update_sprite()
+        self.update_renderer()
 
     @property
     def velocity(self) -> jank.Vec2d:
         return self.body.velocity
 
     @velocity.setter
-    def velocity(self, velocity: jank.Vec2d):
+    def velocity(self, velocity: t.Union[jank.Vec2d, t.Tuple[float, float]]):
         self.body.velocity = velocity
 
     @property
@@ -110,7 +116,7 @@ class Entity:
     @angle.setter
     def angle(self, angle: float):
         self.body.angle = angle
-        self.update_sprite()
+        self.update_renderer()
 
     @property
     def angle_degrees(self) -> float:
@@ -119,77 +125,6 @@ class Entity:
     @angle_degrees.setter
     def angle_degrees(self, angle_degrees: float):
         self.angle = math.radians(angle_degrees)
-
-    @property
-    def flip_x(self) -> bool:
-        return self._flip_x
-
-    @flip_x.setter
-    def flip_x(self, flip_x: bool):
-        if self._flip_x != flip_x:
-            if flip_x:
-                self.scale_x = -(abs(self.scale_x))
-            else:
-                self.scale_x = abs(self.scale_x)
-            self._flip_x = flip_x
-            self.update_sprite()
-
-    @property
-    def flip_y(self) -> bool:
-        return self._flip_y
-
-    @flip_y.setter
-    def flip_y(self, flip_y: bool):
-        if self._flip_y != flip_y:
-            if flip_y:
-                self.scale_y = -(abs(self.scale_y))
-            else:
-                self.scale_y = abs(self.scale_y)
-            self._flip_y = flip_y
-            self.update_sprite()
-
-    @property
-    def scale(self) -> float:
-        return self.sprite.scale
-
-    @scale.setter
-    def scale(self, scale: float):
-        self.sprite.scale = scale
-        self.update_sprite()
-
-    @property
-    def scale_x(self) -> float:
-        return self.sprite.scale_x
-
-    @scale_x.setter
-    def scale_x(self, scale_x: float):
-        self.sprite.scale_x = scale_x
-        self.update_sprite()
-
-    @property
-    def scale_y(self) -> float:
-        return self.sprite.scale_y
-
-    @scale_y.setter
-    def scale_y(self, scale_y: float):
-        self.sprite.scale_y = scale_y
-        self.update_sprite()
-
-    @property
-    def base_width(self) -> float:
-        return self.sprite.width / abs(self.scale_x) / abs(self.scale)
-
-    @property
-    def base_height(self) -> float:
-        return self.sprite.height / abs(self.scale_y) / abs(self.scale)
-
-    @property
-    def scaled_width(self) -> float:
-        return self.base_width * self.scale_x * self.scale
-
-    @property
-    def scaled_height(self) -> float:
-        return self.base_height * self.scale_y * self.scale
 
     def add_collider(self, shape: shapes.Base) -> jank.physics.Shape:
         col = shapes.initialise_shape(shape)
@@ -201,26 +136,6 @@ class Entity:
         self.colliders.append(col)
 
         return col
-
-    def update_sprite(self):
-        if hasattr(self, "sprite"):
-            pos = jank.Vec2d(self.sprite_offset)
-            pos.x -= self.scaled_width/2
-            pos.y -= self.scaled_height/2
-            pos = self.position+pos.rotated(self.angle)
-            self.sprite.position = tuple(pos)
-            self.sprite.rotation = -self.angle_degrees
-
-    @property
-    def sprite(self) -> jank.Sprite:
-        return self._sprite
-
-    @sprite.setter
-    def sprite(self, sprite: jank.Sprite):
-        self._sprite = sprite
-        if hasattr(self.sprite, "push_handlers"):
-            self.sprite.push_handlers(self)
-        self.update_sprite()
 
     @property
     def grounded(self) -> bool:
@@ -258,14 +173,34 @@ class Entity:
             max(shape.bb.top for shape in self.colliders)
         )
 
+    def update_renderer(self):
+        if self.renderer is not None:
+            self.renderer.update(
+                position=self.position,
+                rotation=self.angle_degrees,
+                rotation_is_radians=False
+            )
+
+    @property
+    def renderer(self) -> jank.renderer.Renderer:
+        return self._renderer
+
+    @renderer.setter
+    def renderer(self, renderer: jank.renderer.Renderer):
+        if self.renderer is not None:
+            self.renderer.remove_handlers(self)
+        self._renderer = renderer
+        if self.renderer is not None:
+            self.renderer.push_handlers(self)
+        self.update_renderer()
+
     def draw(self):
-        if hasattr(self, "sprite"):
-            self.sprite.draw()
+        if self.renderer is not None:
+            self.renderer.draw()
 
     def delete(self):
         self.space = None
         jank.get_app().remove_handlers(self)
-        if hasattr(self, "sprite"):
-            if hasattr(self.sprite, "remove_handlers"):
-                self.sprite.remove_handlers(self)
-            self.sprite.delete()
+        if self.renderer is not None:
+            self.renderer.remove_handlers(self)
+            self.renderer.delete()
