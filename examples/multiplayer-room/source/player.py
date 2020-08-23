@@ -34,12 +34,13 @@ class Player(jank.Entity):
 
     def create_sprite(self):
         image = jank.resource.image("resources/player.png")
-        self.sprite = jank.Sprite(
+        sprite = jank.Sprite(
             image,
             0, 0,
             batch=jank.get_app().world_batch,
             subpixel=True
         )
+        self.renderer = jank.renderer.SpriteRenderer.create_from_sprite(sprite)
         self.label = jank.pyglet.text.Label(
             text=self.player_id,
             font_size=8,
@@ -74,8 +75,8 @@ class Player(jank.Entity):
             scale = PLAYER_SPEED / self.v.length
             self.v = self.v * scale
 
-    def update_sprite(self):
-        super().update_sprite()
+    def update_renderer(self):
+        super().update_renderer()
         if self.label is not None:
             self.label.x = self.position.x
             self.label.y = self.position.y + 10
