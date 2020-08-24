@@ -82,6 +82,8 @@ class Client(jank.pyglet.event.EventDispatcher):
             self._socket_udp.bind(("0.0.0.0", 0))
             _, port = self._socket_udp.getsockname()
             self.send("_assign_udp_port", {"port": port})
+            self.send("_assign_udp_port", {"port": port}, network_protocol=self.UDP)
+            # TODO: Figure why this works.
 
             socket_thread_udp = threading.Thread(
                 target=self._socket_thread,
