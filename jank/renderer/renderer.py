@@ -5,6 +5,8 @@ import jank
 
 
 class Renderer:
+    CAN_ROTATE: bool = True
+
     _last_position: jank.Vec2d = jank.Vec2d.zero()
     _last_rotation: float = 0
     _offset: jank.Vec2d = jank.Vec2d.zero()
@@ -130,7 +132,10 @@ class Renderer:
 
         offset = self.offset-self._anchor_offset
 
-        self.set_position(position+offset.rotated(rotation))
+        if self.CAN_ROTATE:
+            offset = offset.rotated(rotation)
+
+        self.set_position(position+offset)
         self.set_rotation(-rotation)
 
     @property

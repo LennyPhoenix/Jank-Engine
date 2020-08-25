@@ -141,3 +141,19 @@ class SpriteRenderer(Renderer):
                 self.scale_y = abs(self.scale_y)
             self._flip_y = flip_y
             self.update()
+
+    @property
+    def colour(self) -> t.Tuple[int, int, int]:
+        return self.sprite.color
+
+    @colour.setter
+    def colour(self, colour: t.Tuple[int, int, int]):
+        self.sprite.color = colour
+
+    @property
+    def opacity(self) -> int:
+        return self.sprite.opacity
+
+    @opacity.setter
+    def opacity(self, opacity: int):
+        self.sprite.opacity = opacity
