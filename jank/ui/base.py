@@ -2,14 +2,12 @@ import typing as t
 
 import jank
 
-from .constants import BOTTOM, LEFT
-
 
 class Base:
-    _anchor_x: float = LEFT
-    _anchor_y: float = BOTTOM
-    _parent_anchor_x: float = LEFT
-    _parent_anchor_y: float = BOTTOM
+    _anchor_x: float = 0.5
+    _anchor_y: float = 0.5
+    _parent_anchor_x: float = 0.5
+    _parent_anchor_y: float = 0.5
     _parent: t.Any = None
 
     children: t.List[t.Any]
@@ -214,3 +212,21 @@ class Base:
     def on_resize(self, width, height):
         if self.parent is None:
             self.update_position()
+
+    @property
+    def anchor(self) -> t.Tuple[float, float]:
+        return (self.anchor_x, self.anchor_y)
+
+    @anchor.setter
+    def anchor(self, anchor: t.Tuple[float, float]):
+        self._anchor_x, self._anchor_y = anchor
+        self.update_position()
+
+    @property
+    def parent_anchor(self) -> t.Tuple[float, float]:
+        return (self.parent_anchor_x, self.parent_anchor_y)
+
+    @parent_anchor.setter
+    def parent_anchor(self, parent_anchor: t.Tuple[float, float]):
+        self._parent_anchor_x, self._parent_anchor_y = parent_anchor
+        self.update_position()
