@@ -20,7 +20,7 @@ class Player(jank.Entity):
         self.label = None
 
         super().__init__(
-            collider=jank.shapes.Rect(
+            collider=jank.colliders.Rect(
                 width=16,
                 height=16
             )

@@ -22,7 +22,7 @@ class Application(jank.Application):
         self.floor = jank.Entity(
             position=(0, -325),
             body_type=jank.Entity.STATIC,
-            collider=jank.shapes.Rect(
+            collider=jank.colliders.Rect(
                 width=950,
                 height=50
             )
@@ -32,7 +32,7 @@ class Application(jank.Application):
         # Create the player object. Note that the Entity class can be subclassed.
         self.player = jank.Entity(
             position=(0, 0),
-            collider=jank.shapes.Rect(
+            collider=jank.colliders.Rect(
                 width=100,
                 height=100
             )

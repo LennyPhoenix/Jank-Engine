@@ -65,7 +65,7 @@ class Ragdoll:
                 self.TORSO_SIZE
             ),
             position=position,
-            collider=jank.shapes.Rect(
+            collider=jank.colliders.Rect(
                 width=self.TORSO_SIZE[0],
                 height=self.TORSO_SIZE[1],
                 friction=self.TORSO_FRICTION,
@@ -81,7 +81,7 @@ class Ragdoll:
                     0, self.HEAD_SIZE
                 ),
                 position=position,
-                collider=jank.shapes.Circle(
+                collider=jank.colliders.Circle(
                     radius=self.HEAD_SIZE,
                     friction=self.HEAD_FRICTION,
                     filter=self.group
@@ -108,7 +108,7 @@ class Ragdoll:
                     self.R_ARM_SIZE
                 ),
                 position=position,
-                collider=jank.shapes.Rect(
+                collider=jank.colliders.Rect(
                     width=self.R_ARM_SIZE[0],
                     height=self.R_ARM_SIZE[1],
                     friction=self.R_ARM_FRICTION,
@@ -136,7 +136,7 @@ class Ragdoll:
                     self.L_ARM_SIZE
                 ),
                 position=position,
-                collider=jank.shapes.Rect(
+                collider=jank.colliders.Rect(
                     width=self.L_ARM_SIZE[0],
                     height=self.L_ARM_SIZE[1],
                     friction=self.L_ARM_FRICTION,
@@ -164,7 +164,7 @@ class Ragdoll:
                     self.R_LEG_SIZE
                 ),
                 position=position,
-                collider=jank.shapes.Rect(
+                collider=jank.colliders.Rect(
                     width=self.R_LEG_SIZE[0],
                     height=self.R_LEG_SIZE[1],
                     friction=self.R_LEG_FRICTION,
@@ -192,7 +192,7 @@ class Ragdoll:
                     self.L_LEG_SIZE
                 ),
                 position=position,
-                collider=jank.shapes.Rect(
+                collider=jank.colliders.Rect(
                     width=self.L_LEG_SIZE[0],
                     height=self.L_LEG_SIZE[1],
                     friction=self.L_LEG_FRICTION,
@@ -268,7 +268,7 @@ class Application(jank.Application):
         self.floor = jank.Entity(
             position=(0, -350),
             body_type=jank.Entity.STATIC,
-            collider=jank.shapes.Rect(width=700, height=25, friction=0.8)
+            collider=jank.colliders.Rect(width=700, height=25, friction=0.8)
         )
         self.floor.space = self.physics_space
 

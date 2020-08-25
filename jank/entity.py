@@ -3,7 +3,7 @@ import typing as t
 
 import jank
 
-from . import shapes
+from . import colliders
 
 
 class Entity:
@@ -23,8 +23,8 @@ class Entity:
         rotation_degrees: float = 0,
         body_type: int = DYNAMIC,
         mass: float = 1, moment: float = float("inf"),
-        colliders: t.Optional[t.List[shapes.Base]] = None,
-        collider: t.Optional[shapes.Base] = None,
+        colliders: t.Optional[t.List[colliders.Base]] = None,
+        collider: t.Optional[colliders.Base] = None,
         space: t.Optional[jank.physics.Space] = None
     ):
         self.colliders = []
@@ -126,8 +126,8 @@ class Entity:
     def angle_degrees(self, angle_degrees: float):
         self.angle = math.radians(angle_degrees)
 
-    def add_collider(self, shape: shapes.Base) -> jank.physics.Shape:
-        col = shapes.initialise_shape(shape)
+    def add_collider(self, shape: colliders.Base) -> jank.physics.Shape:
+        col = colliders.initialise_shape(shape)
         col.body = self.body
 
         if self.space is not None:
