@@ -7,12 +7,11 @@ import jank
 class Renderer:
     CAN_ROTATE: bool = True
 
+    _anchor_x: float = 0.5
+    _anchor_y: float = 0.5
     _last_position: jank.Vec2d = jank.Vec2d.zero()
     _last_rotation: float = 0
     _offset: jank.Vec2d = jank.Vec2d.zero()
-
-    anchor_x: float = 0.5
-    anchor_y: float = 0.5
 
     def push_handlers(self, *handlers: t.List[t.Any]):
         """ Push the handlers to the renderable. """
@@ -107,6 +106,7 @@ class Renderer:
         if type(offset) == tuple:
             offset = jank.Vec2d(offset)
         self._offset = offset
+        self.update()
 
     def update(
         self,
@@ -137,6 +137,33 @@ class Renderer:
 
         self.set_position(position+offset)
         self.set_rotation(-rotation)
+
+    @property
+    def anchor_x(self) -> float:
+        return self._anchor_x
+
+    @anchor_x.setter
+    def anchor_x(self, anchor_x: float):
+        self._anchor_x = anchor_x
+        self.update()
+
+    @property
+    def anchor_y(self) -> float:
+        return self._anchor_y
+
+    @anchor_y.setter
+    def anchor_y(self, anchor_y: float):
+        self._anchor_y = anchor_y
+        self.update()
+
+    @property
+    def anchor(self) -> t.Tuple[float, float]:
+        return self._anchor_x, self._anchor_y
+
+    @anchor.setter
+    def anchor(self, anchor: t.Tuple[float, float]):
+        self._anchor_x, self._anchor_y = anchor
+        self.update()
 
     @property
     def _anchor_offset(self) -> jank.Vec2d:
