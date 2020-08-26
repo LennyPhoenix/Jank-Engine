@@ -157,3 +157,12 @@ class SpriteRenderer(Renderer):
     @opacity.setter
     def opacity(self, opacity: int):
         self.sprite.opacity = opacity
+
+    @property
+    def image(self) -> t.Union[jank.pyglet.image.AbstractImage, jank.pyglet.image.Animation]:
+        return self.sprite.image
+
+    @image.setter
+    def image(self, image: t.Union[jank.pyglet.image.AbstractImage, jank.pyglet.image.Animation]):
+        self.sprite.image = image
+        self.update()
