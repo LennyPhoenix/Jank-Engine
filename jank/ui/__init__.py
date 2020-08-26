@@ -1,17 +1,9 @@
-from .base import Base
+from .base import UIBase
 from .button import Button, ToggleButton
-from .circle import Circle
-from .html_text import HTMLText
-from .rectangle import Rect
-from .sprite import Sprite
-from .text import Text
+from .ui_renderer import UIRenderer
 
 __all__ = [
-    "Base",
+    "UIBase",
     "Button", "ToggleButton",
-    "Circle",
-    "HTMLText",
-    "Rect",
-    "Sprite",
-    "Text",
+    "UIRenderer",
 ]
