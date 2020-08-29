@@ -57,11 +57,11 @@ class UIBase:
     def delete(self, recursive: bool = True):
         parent = self.parent
         self.parent = None
-        for child in self.children:
+        while len(self.children) > 0:
             if recursive:
-                child.delete(True)
+                self.children[0].delete(True)
             else:
-                child.parent = parent
+                self.children[0].parent = parent
         jank.get_app().remove_handlers(self)
         self.run_cleanup()
 
