@@ -44,32 +44,9 @@ class Application:
             return
 
         self.create_layers(self.config.world_layers, self.config.ui_layers)
-        if config.antialiasing is not None:
-            try:
-                gl_config = jank.pyglet.gl.Config(sample_buffers=1, samples=config.antialiasing)
-                self.window = jank.pyglet.window.Window(
-                    width=self.config.default_size[0],
-                    height=self.config.default_size[1],
-                    caption=self.config.caption,
-                    resizable=self.config.resizable,
-                    vsync=self.config.vsync,
-                    config=gl_config
-                )
-            except jank.pyglet.window.NoSuchConfigException:
-                print("Multisampling not available.")
-                config.antialiasing = None
-        if config.antialiasing is None:
-            self.window = jank.pyglet.window.Window(
-                width=self.config.default_size[0],
-                height=self.config.default_size[1],
-                caption=self.config.caption,
-                resizable=self.config.resizable,
-                vsync=self.config.vsync
-            )
 
-        if self.config.icon is not None:
-            self.window.set_icon(self.config.icon)
-        self.window.set_minimum_size(*self.config.minimum_size)
+        self.window = self.create_window(self.config)
+
         self.push_handlers(self)
 
         self.fps_display = jank.pyglet.window.FPSDisplay(window=self.window)
@@ -84,6 +61,61 @@ class Application:
         self.ui_batch = jank.graphics.Batch()
         self.camera = Camera()
         self.camera.set_active()
+
+    def create_window(self, config: Config, set_main: bool = False):
+        if config.borderless:
+            style = jank.pyglet.window.Window.WINDOW_STYLE_BORDERLESS
+        else:
+            style = jank.pyglet.window.Window.WINDOW_STYLE_DEFAULT
+
+        if config.antialiasing is not None:
+            try:
+                gl_config = jank.pyglet.gl.Config(sample_buffers=1, samples=config.antialiasing)
+                window = jank.pyglet.window.Window(
+                    width=config.default_size[0],
+                    height=config.default_size[1],
+                    caption=config.caption,
+                    resizable=config.resizable,
+                    vsync=config.vsync,
+                    config=gl_config,
+                    style=style
+                )
+            except jank.pyglet.window.NoSuchConfigException:
+                print("Multisampling not available.")
+                config.antialiasing = None
+        if config.antialiasing is None:
+            window = jank.pyglet.window.Window(
+                width=config.default_size[0],
+                height=config.default_size[1],
+                caption=config.caption,
+                resizable=config.resizable,
+                vsync=config.vsync,
+                style=style
+            )
+
+        if set_main:
+            self.window = window
+
+        for handler in self._handlers:
+            window.push_handlers(handler)
+
+        if hasattr(self, "fps_display"):
+            del self.fps_display
+            self.fps_display = jank.pyglet.window.FPSDisplay(window=window)
+            if config.fps_label is not None:
+                self.fps_display.label = config.fps_label
+
+        if config.fullscreen:
+            window.set_fullscreen(config.fullscreen)
+
+        if config.maximised:
+            window.maximize()
+
+        if config.icon is not None:
+            window.set_icon(config.icon)
+        window.set_minimum_size(*config.minimum_size)
+
+        return window
 
     def screen_to_world(self, position: t.Tuple[int, int]) -> t.Tuple[float, float]:
         """ Convert a screen position to a world position. """

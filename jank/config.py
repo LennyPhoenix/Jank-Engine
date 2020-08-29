@@ -10,6 +10,9 @@ class Config:
     icon: t.Optional[jank.pyglet.image.AbstractImage] = None
     default_size: t.Tuple[int, int] = (1000, 800)
     minimum_size: t.Tuple[int, int] = (100, 100)
+    maximised: bool = False
+    fullscreen: bool = False
+    borderless: bool = False
     resizable: bool = True
     vsync: bool = True
     bilinear_filtering: bool = False
