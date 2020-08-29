@@ -62,7 +62,7 @@ class Application:
         self.camera = Camera()
         self.camera.set_active()
 
-    def create_window(self, config: Config, set_main: bool = False):
+    def create_window(self, config: Config, set_main: bool = False) -> jank.pyglet.window.Window:
         if config.borderless:
             style = jank.pyglet.window.Window.WINDOW_STYLE_BORDERLESS
         else:
