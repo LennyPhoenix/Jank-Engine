@@ -138,22 +138,6 @@ Button.register_event_type("on_release")
 
 
 class ToggleButton(Button):
-    def __init__(
-        self,
-        x: float, y: float,
-        out_img: jank.pyglet.image.AbstractImage,
-        in_img: jank.pyglet.image.AbstractImage,
-        hover_img: t.Optional[jank.pyglet.image.AbstractImage] = None,
-        inactive_img: t.Optional[jank.pyglet.image.AbstractImage] = None,
-        parent: t.Optional[UIBase] = None,
-        batch: t.Optional[jank.graphics.Batch] = None,
-        group: t.Optional[jank.graphics.Group] = None
-    ):
-        super().__init__(
-            x, y, out_img, in_img=in_img, hover_img=hover_img,
-            inactive_img=inactive_img, parent=parent, batch=batch, group=group
-        )
-
     def on_mouse_press(self, x, y, buttons, modifiers):
         if not self.check_hit(x, y) or not self.active:
             return
