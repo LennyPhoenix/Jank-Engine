@@ -249,13 +249,14 @@ class Application(jank.Application):
         super().__init__(config, debug_mode=True, show_fps=True)
         self.physics_space.gravity = (0, -300)
 
-        self._paused_label = jank.pyglet.text.Label(
-            "Paused, Press Space",
+        renderer = jank.renderer.TextRenderer(
+            text="Paused, Press Space",
             font_size=24,
-            x=400, y=760,
-            anchor_x="center",
             batch=self.ui_batch
         )
+        self.paused_label = jank.ui.UIRenderer(0, 0, renderer)
+        self.paused_label.anchor = (0.5, 1)
+        self.paused_label.parent_anchor = (0.5, 1)
 
         self.ragdoll = Ragdoll(
             position=(0, 0),
@@ -302,10 +303,7 @@ class Application(jank.Application):
     @paused.setter
     def paused(self, paused: bool):
         self._paused = paused
-        if paused:
-            self._paused_label.text = "Paused, Press Space"
-        else:
-            self._paused_label.text = ""
+        self.paused_label.renderer.visible = paused
 
 
 if __name__ == "__main__":
