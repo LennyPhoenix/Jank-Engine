@@ -10,8 +10,6 @@ from .ui_renderer import UIRenderer
 class Button(UIRenderer, jank.pyglet.event.EventDispatcher):
     _active: bool = True
     _time_pressed: float = 0
-    _x: float
-    _y: float
 
     renderer: jank.renderer.SpriteRenderer
 
@@ -26,8 +24,6 @@ class Button(UIRenderer, jank.pyglet.event.EventDispatcher):
         batch: t.Optional[jank.graphics.Batch] = None,
         group: t.Optional[jank.graphics.Group] = None
     ):
-        self._x = x
-        self._y = y
         self._out_img = out_img
         self._in_img = in_img
         self._hover_img = hover_img

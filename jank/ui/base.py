@@ -17,6 +17,8 @@ class UIBase:
     children: t.List["UIBase"]
 
     def __init__(self, x: float = 0, y: float = 0, parent: t.Optional["UIBase"] = None):
+        self._x = x
+        self._y = y
         self.children = []
         self.parent = parent
         jank.get_app().push_handlers(self)
@@ -183,7 +185,7 @@ class UIBase:
         return self._y
 
     @y.setter
-    def _set_y(self, y: float):
+    def y(self, y: float):
         self._y = y
         self.update()
 
