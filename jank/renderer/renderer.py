@@ -133,7 +133,7 @@ class Renderer:
         offset = self.offset-self._anchor_offset
 
         if self.CAN_ROTATE:
-            offset = offset.rotated(rotation)
+            offset = offset.rotated_degrees(rotation)
 
         self.set_position(position+offset)
         self.set_rotation(-rotation)
