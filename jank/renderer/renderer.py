@@ -35,7 +35,7 @@ class Renderer:
         """ Gets the width of the renderable. """
         return 0.
 
-    def set_width(self) -> float:
+    def set_width(self, width: float):
         """ Sets the width of the renderable. (Optional) """
 
     @property
@@ -52,7 +52,7 @@ class Renderer:
         """ Gets the height of the renderable. """
         return 0.
 
-    def set_height(self) -> float:
+    def set_height(self, height: float):
         """ Sets the height of the renderable. (Optional) """
 
     @property
