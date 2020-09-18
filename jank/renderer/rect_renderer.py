@@ -48,8 +48,14 @@ class RectRenderer(Renderer):
     def get_width(self) -> float:
         return self.rect.width
 
+    def set_width(self, width: float):
+        self.rect.width = width
+
     def get_height(self) -> float:
         return self.rect.height
+
+    def set_height(self, height: float):
+        self.rect.height = height
 
     def draw(self):
         self.rect.draw()
