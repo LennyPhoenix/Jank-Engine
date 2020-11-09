@@ -2,3 +2,4 @@ pip
 pyglet
 pymunk
 setuptools
+wheel
