@@ -7,7 +7,13 @@ Python game engine using Pyglet and Pymunk.
 Install with pip:
 
 ```cmd
-python -m pip install -U git+https://github.com/DoAltPlusF4/Jank-Engine.git
+python -m pip install -U jank
+```
+
+Install development version:
+
+```cmd
+python -m pip install -U git+https://github.com/LennyPhoenix/Jank-Engine.git
 ```
 
 ## Trello Roadmap

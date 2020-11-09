@@ -5,14 +5,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="jank",
-    version="0.1.0dev",
-    author="DoAltPlusF4",
-    author_email="doaltplusf4@gmail.com",
+    version="0.1.0",
+    author="LennyPhoenix",
+    author_email="LennyPhoenixC@gmail.com",
     description="A game engine using Pyglet and Pymunk.",
     license="LICENSE",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/DoAltPlusF4/Jank-Engine",
+    url="https://github.com/LennyPhoenix/Jank-Engine",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -21,6 +21,6 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        "pyglet>=1.5.7", "pymunk"
+        "pyglet>=1.5.9", "pymunk"
     ]
 )
