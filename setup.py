@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="jank",
-    version="0.1.0",
+    version="0.1.1",
     author="LennyPhoenix",
     author_email="LennyPhoenixC@gmail.com",
     description="A game engine using Pyglet and Pymunk.",
